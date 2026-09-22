@@ -1,0 +1,29 @@
+# Hugo output
+public/
+resources/_gen/
+
+# Hugo caches
+.hugo_build.lock
+
+# Node.js
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sw?
+
+# Optional: if you use Netlify or Vercel, ignore their local folders
+.netlify/
+.vercel/
