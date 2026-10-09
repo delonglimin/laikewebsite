@@ -1,0 +1,9 @@
+# Cloudflare Pages 响应头配置
+# 构建时由 static/ 原样输出到 public/_headers，Cloudflare 在边缘生效。
+#
+# 为什么需要这段：Cloudflare 对 .txt 默认下发 `Content-Type: text/plain`（不带 charset），
+# 浏览器拿不到编码声明时会回退到系统本地编码（中文 Windows 为 GBK）解析，
+# 于是 llms.txt / robots.txt 里的中文全部乱码。显式补上 charset=utf-8 即可修复。
+
+/*.txt
+  Content-Type: text/plain; charset=utf-8
