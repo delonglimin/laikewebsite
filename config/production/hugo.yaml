@@ -1,0 +1,14 @@
+# ============================================================
+# 正式环境配置
+#
+# `hugo` 命令默认 environment = production，会自动合并本文件。
+# `hugo server` 为 development 环境，不会加载本文件（保持 baseURL "/"）。
+#
+# 上线后：canonical / og:url / sitemap.xml / robots.txt 中的绝对地址
+#         全部基于此处域名生成。
+# ============================================================
+baseURL: "https://liaoruan.dpdns.org/"
+
+# 正式构建启用压缩与资源指纹
+minify:
+  minifyOutput: true

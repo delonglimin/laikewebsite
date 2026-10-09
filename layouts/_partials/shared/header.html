@@ -1,0 +1,135 @@
+<nav class="z-50">
+  <div class="container mx-auto flex items-center justify-between px-4 py-6">
+    <a class="flex items-center" href="{{ .Site.BaseURL }}">
+      {{ with site.Params.logo }}
+        {{/* Logo already contains the wordmark, so the site title is not repeated. */}}
+        {{ partial "utilities/image.html" (dict "src" . "class" "h-8 w-auto" "alt" site.Title) }}
+      {{ else }}
+        <span class="text-primary text-xl font-semibold uppercase xl:text-3xl">{{ .Site.Title }}</span>
+      {{ end }}
+    </a>
+    <button
+      class="cursor-pointer xl:hidden"
+      type="button"
+      data-toggle-target="#navbarContent"
+      data-toggle-class="-translate-y-full"
+      aria-label="Toggle Navigation"
+    >
+      {{ partial "heroicons/bars-4" }}
+
+    </button>
+    <div
+      class="fixed inset-0 flex -translate-y-full flex-col overflow-y-auto bg-white duration-500 xl:relative xl:translate-y-0 xl:flex-row xl:overflow-visible"
+      id="navbarContent"
+    >
+      <div class="container absolute top-0 mx-auto flex items-center justify-between px-4 py-6 xl:hidden bg-white">
+        <a class="flex items-center xl:hidden" href="{{ .Site.BaseURL }}">
+          {{ with site.Params.logo }}
+            {{ partial "utilities/image.html" (dict "src" . "class" "h-8 w-auto" "alt" site.Title) }}
+          {{ else }}
+            <span class="text-primary text-xl font-semibold uppercase xl:text-3xl">{{ .Site.Title }}</span>
+          {{ end }}
+        </a>
+        <button
+          class="cursor-pointer xl:hidden"
+          type="button"
+          data-toggle-target="#navbarContent"
+          data-toggle-class="-translate-y-full"
+          aria-label="Toggle Navigation"
+        >
+          {{ partial "heroicons/x-mark" }}
+        </button>
+      </div>
+      {{- /* m-auto：移动端安全居中（内容超高时不会被裁掉，可正常滚动）；xl 还原为普通导航条 */ -}}
+      <ul class="m-auto flex flex-col items-center gap-8 py-24 xl:m-0 xl:flex-row xl:py-0">
+        {{ range site.Menus.main }}
+          {{- /* 只渲染顶层项（子项通过 .Children 输出），避免下拉子项重复出现在主导航 */ -}}
+          {{ if not .Parent }}
+            {{- $external := hasPrefix .URL "http" -}}
+            {{ if .HasChildren }}
+              <li class="group relative text-center" data-nav-dropdown>
+                <div class="flex items-center justify-center gap-1.5">
+                  <a
+                    class="text-primary font-bold"
+                    href="{{ .URL | safeURL }}"
+                    {{ if $external }}target="_blank" rel="noopener"{{ end }}
+                    >{{ .Name }}</a
+                  >
+                  {{- /* 桌面端：hover 展开提示箭头。
+                       显隐控制放在外层 span 上——FA 的 .fa-solid{display:inline-block}
+                       是未分层规则，会压过 @layer utilities 里的 hidden，直接写在 <i> 上不生效 */ -}}
+                  <span class="hidden xl:inline-block" aria-hidden="true">
+                    <i
+                      class="fa-solid fa-chevron-down text-primary text-[0.65em] transition-transform duration-300 group-hover:rotate-180"
+                    ></i>
+                  </span>
+                  {{- /* 移动端：点击展开/收起子菜单 */ -}}
+                  <button
+                    class="text-primary cursor-pointer xl:hidden"
+                    type="button"
+                    data-nav-toggle
+                    aria-expanded="false"
+                    aria-label="展开「{{ .Name }}」子菜单"
+                  >
+                    <i class="fa-solid fa-chevron-down text-[0.7em] transition-transform duration-300" aria-hidden="true"></i>
+                  </button>
+                </div>
+                {{- /* 下拉面板：移动端由 JS 切换 hidden；桌面端 hover 展开（原点缩放，无悬停断点） */ -}}
+                <ul
+                  data-nav-panel
+                  class="mt-4 hidden space-y-3 xl:invisible xl:absolute xl:top-full xl:left-1/2 xl:z-50 xl:mt-0 xl:block xl:w-max xl:min-w-32 xl:origin-top xl:-translate-x-1/2 xl:scale-95 xl:space-y-1 xl:rounded-2xl xl:border xl:border-[#E9ECF2] xl:bg-white xl:p-2 xl:opacity-0 xl:shadow-xl xl:shadow-gray-900/10 xl:transition-all xl:duration-200 xl:group-hover:visible xl:group-hover:scale-100 xl:group-hover:opacity-100"
+                >
+                  {{ range .Children }}
+                    <li>
+                      <a
+                        class="text-sm text-[#5A6270] transition-colors hover:text-[#0152D9] xl:block xl:rounded-xl xl:px-4 xl:py-2.5 xl:whitespace-nowrap xl:hover:bg-[#EEF3FE]"
+                        href="{{ .URL | safeURL }}"
+                        >{{ .Name }}</a
+                      >
+                    </li>
+                  {{ end }}
+                </ul>
+              </li>
+            {{ else }}
+              <li class="text-center">
+                <a
+                  class="text-primary font-bold"
+                  href="{{ .URL | safeURL }}"
+                  {{ if $external }}target="_blank" rel="noopener"{{ end }}
+                  >{{ .Name }}</a
+                >
+              </li>
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      </ul>
+      {{- /* 右侧 CTA 按钮已按需求移除；如需恢复，取消下一段注释即可（数据在 config/_default/menus.yaml 的 buttons 组） */ -}}
+      {{- /*
+      <ul class="flex flex-col gap-8 xl:flex-row">
+        {{ range .Site.Menus.buttons }}
+          <li class="text-center">
+            {{ partial "components/button/primary" (dict "label" .Name "href" .URL ) }}
+          </li>
+        {{ end }}
+      </ul>
+      */ -}}
+    </div>
+  </div>
+</nav>
+
+<script>
+  /* 移动端子菜单展开/收起（桌面端按钮隐藏，不影响 hover 交互） */
+  (function () {
+    var toggle = document.querySelectorAll('[data-nav-toggle]');
+    for (var i = 0; i < toggle.length; i++) {
+      toggle[i].addEventListener('click', function () {
+        var panel = this.closest('[data-nav-dropdown]').querySelector('[data-nav-panel]');
+        if (!panel) return;
+        var open = !panel.classList.toggle('hidden');
+        this.setAttribute('aria-expanded', open ? 'true' : 'false');
+        var icon = this.querySelector('i');
+        if (icon) icon.classList.toggle('rotate-180', open);
+      });
+    }
+  })();
+</script>

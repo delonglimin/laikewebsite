@@ -1,0 +1,135 @@
+{{- /* ==========================================================================
+  定制案例详情页模板（layouts/custom-cases/single.html）
+  仅作用于 content/custom-cases/<slug>/ 下的页面。
+
+  front matter 字段约定：
+    title        案例名称（必填，H1）
+    subtitle     英文/品类副标题（如 Smart Forestry Digital Twin Platform）
+    description  一句话概述（页头副文 + SEO description）
+    summary      列表卡片摘要（缺省用 description）
+    icon         图标（FontAwesome 类名）
+    weight       排序权重
+    image        列表卡片配图（指向 assets 里的封面，通常与 poster 同值）
+    video        assets/video/ 下的视频文件名（发布到站点根）
+    poster       视频封面图（assets 路径，如 images/cases/xx-poster.jpg）
+    video_note   视频下方说明文案（可选）
+    info[]       项目信息卡 —— 已停用（数据保留在 front matter，页面不再渲染）
+    features[]   核心功能 —— 已停用（同上）
+    outcomes[]   建设成效 —— 已停用（同上）
+    正文         「项目概述」区域的 markdown 内容（页面仅保留此区块）
+   ========================================================================== */ -}}
+
+{{ define "main" }}
+  {{- /* 视频地址：video 字段存的是 assets/video/ 下的文件名，发布后位于站点根 /video/ */ -}}
+  {{- $video := "" -}}
+  {{- with .Params.video }}{{ $video = . | relURL }}{{ end -}}
+  {{- /* 封面图走 assets 资源管线，取发布后的真实地址作为 poster */ -}}
+  {{- $poster := "" -}}
+  {{- with .Params.poster -}}
+    {{- with resources.Get . }}{{ $poster = .RelPermalink }}{{ end -}}
+  {{- end -}}
+
+  <section class="pt-10 pb-16 xl:pt-14 xl:pb-24">
+    <div class="container mx-auto px-4">
+      {{- /* ── 面包屑 ────────────────────────────────────────────── */ -}}
+      <nav class="mb-10 text-sm text-[#8A919E]" aria-label="面包屑">
+        <ol class="flex flex-wrap items-center gap-2">
+          <li><a class="transition-colors hover:text-[#0152D9]" href="{{ site.Home.RelPermalink }}">首页</a></li>
+          {{ range .Ancestors.Reverse }}
+            {{ if ne .Kind "home" }}
+              <li aria-hidden="true">/</li>
+              <li>
+                <a class="transition-colors hover:text-[#0152D9]" href="{{ .RelPermalink }}">{{ .Title }}</a>
+              </li>
+            {{ end }}
+          {{ end }}
+          <li aria-hidden="true">/</li>
+          <li class="text-[#374151]" aria-current="page">{{ .Title }}</li>
+        </ol>
+      </nav>
+
+      {{- /* ── 页头 ──────────────────────────────────────────────── */ -}}
+      <header class="mx-auto mb-14 max-w-4xl text-center">
+        {{ with .Params.subtitle }}
+          <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">{{ . }}</p>
+        {{ end }}
+        <h1 class="text-4xl font-bold text-gray-900 xl:text-5xl">{{ .Title }}</h1>
+      </header>
+
+      {{- /* ── 项目演示视频（页面开头） ──────────────────────────── */ -}}
+      {{ with $video }}
+        <section class="mb-20">
+          <div class="mx-auto max-w-5xl">
+            <div class="overflow-hidden rounded-3xl bg-black shadow-2xl shadow-gray-900/25 ring-1 ring-gray-900/10">
+              <video
+                class="aspect-video w-full object-contain"
+                controls
+                playsinline
+                preload="metadata"
+                {{ with $poster }}poster="{{ . }}"{{ end }}
+              >
+                <source src="{{ . }}" type="video/mp4" />
+                您的浏览器不支持在线视频播放，<a class="text-white underline" href="{{ . }}">点此下载观看</a>。
+              </video>
+            </div>
+            {{ with $.Params.video_note }}
+              <p class="mt-5 text-center text-sm text-[#8A919E]">
+                <i class="fa-solid fa-circle-play text-primary mr-2" aria-hidden="true"></i>{{ . }}
+              </p>
+            {{ end }}
+          </div>
+        </section>
+      {{ end }}
+
+      {{- /* ── 项目概述（单列） ──────────────────────────────────── */ -}}
+      <section class="mb-20">
+        <div class="mx-auto max-w-3xl">
+          <p class="text-primary mb-4 text-center text-sm font-semibold uppercase tracking-widest">Overview</p>
+          <h2 class="mb-8 text-center text-2xl font-bold text-gray-900 xl:text-3xl">项目概述</h2>
+          <div class="prose max-w-none text-[#5A6270]">{{ .Content }}</div>
+        </div>
+      </section>
+
+      {{- /* ── 其他案例 ──────────────────────────────────────────── */ -}}
+      {{ $others := where (where site.RegularPages "Section" "custom-cases") "Permalink" "ne" .Permalink }}
+      {{ with $others }}
+        <section class="mb-20">
+          <h2 class="mb-8 text-2xl font-bold text-gray-900">其他案例</h2>
+          <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {{ range . }}
+              <a
+                class="group hover:border-primary/30 flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                href="{{ .RelPermalink }}"
+              >
+                <span class="bg-primary/10 text-primary flex size-12 shrink-0 items-center justify-center rounded-xl">
+                  <i class="{{ .Params.icon | default "fa-solid fa-cube" }} text-xl" aria-hidden="true"></i>
+                </span>
+                <span class="min-w-0">
+                  <span class="group-hover:text-primary block text-base font-semibold text-gray-900 transition-colors">{{ .Title }}</span>
+                  <span class="mt-1 block truncate text-sm text-[#8A919E]">{{ .Params.subtitle }}</span>
+                </span>
+              </a>
+            {{ end }}
+          </div>
+        </section>
+      {{ end }}
+
+      {{- /* ── 咨询 CTA ──────────────────────────────────────────── */ -}}
+      <section
+        class="rounded-3xl bg-gradient-to-br from-[#0152D9] to-[#013A94] px-8 py-14 text-center shadow-xl shadow-primary/20"
+      >
+        <h2 class="text-2xl font-bold text-white xl:text-3xl">想要一套类似的解决方案？</h2>
+        <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-blue-100">
+          我们可结合您的行业场景与现有系统，提供从需求调研、方案设计到部署实施与持续运维的全流程定制服务。
+        </p>
+        <a
+          class="mt-9 inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 font-medium text-[#0152D9] transition-colors duration-500 hover:bg-blue-50"
+          href="/about/#contact"
+        >
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          联系我们
+        </a>
+      </section>
+    </div>
+  </section>
+{{ end }}

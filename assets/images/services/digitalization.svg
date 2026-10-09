@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" fill="none" role="img" aria-label="企业数字化：经营看板与设备数据采集">
+  <defs>
+    <linearGradient id="dtBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F1F6FD"/>
+    </linearGradient>
+    <linearGradient id="dtCore" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A66F2"/>
+      <stop offset="1" stop-color="#0145BC"/>
+    </linearGradient>
+    <radialGradient id="dtGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(600 440) scale(380)">
+      <stop offset="0" stop-color="#DCE8FB" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#DCE8FB" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="dtSh" x="-60%" y="-60%" width="220%" height="240%">
+      <feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="#0B2A5B" flood-opacity=".16"/>
+    </filter>
+    <filter id="dtShSm" x="-60%" y="-60%" width="220%" height="240%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0B2A5B" flood-opacity=".16"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="900" fill="url(#dtBg)"/>
+  <circle cx="600" cy="440" r="380" fill="url(#dtGlow)"/>
+
+  <!-- 看板主体 -->
+  <g filter="url(#dtSh)">
+    <rect x="250" y="212" width="700" height="400" rx="32" fill="#FFFFFF" stroke="#E3EAF6" stroke-width="2"/>
+  </g>
+  <line x1="250" y1="276" x2="950" y2="276" stroke="#F0F4FA" stroke-width="2"/>
+  <rect x="286" y="242" width="24" height="24" rx="8" fill="#0152D9"/>
+  <rect x="322" y="247" width="112" height="12" rx="6" fill="#E3EBF8"/>
+
+  <!-- 左：完成度环 -->
+  <circle cx="410" cy="444" r="66" stroke="#EAF1FB" stroke-width="20"/>
+  <circle cx="410" cy="444" r="66" stroke="#0152D9" stroke-width="20" stroke-dasharray="311 415" stroke-linecap="round" transform="rotate(-90 410 444)"/>
+  <polyline points="396,462 410,434 424,462" stroke="#0152D9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="410" y1="434" x2="410" y2="470" stroke="#0152D9" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- 右：增长曲线 -->
+  <g stroke="#F0F5FC" stroke-width="2" stroke-linecap="round">
+    <line x1="520" y1="330" x2="900" y2="330"/>
+    <line x1="520" y1="388" x2="900" y2="388"/>
+    <line x1="520" y1="446" x2="900" y2="446"/>
+    <line x1="520" y1="504" x2="900" y2="504"/>
+  </g>
+  <polygon points="520,560 578,505 636,522 694,452 752,470 810,400 868,372 868,560" fill="#E4EDFD"/>
+  <polyline points="520,560 578,505 636,522 694,452 752,470 810,400 868,372" stroke="#0152D9" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="868" cy="372" r="9" fill="#FFFFFF" stroke="#0152D9" stroke-width="3.5"/>
+  <line x1="520" y1="560" x2="900" y2="560" stroke="#E3EAF6" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- 浮动指标卡 -->
+  <g filter="url(#dtShSm)">
+    <rect x="860" y="168" width="200" height="88" rx="26" fill="url(#dtCore)"/>
+  </g>
+  <circle cx="904" cy="212" r="14" fill="#FFFFFF"/>
+  <path d="M898 212 l5 5 l9 -11" stroke="#0152D9" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="934" y="196" width="96" height="12" rx="6" fill="#FFFFFF" opacity=".95"/>
+  <rect x="934" y="218" width="58" height="12" rx="6" fill="#FFFFFF" opacity=".6"/>
+
+  <!-- 设备采集 -->
+  <g stroke="#E3EAF6" stroke-width="2" stroke-dasharray="4 6">
+    <line x1="348" y1="612" x2="348" y2="652"/>
+    <line x1="488" y1="612" x2="488" y2="652"/>
+    <line x1="708" y1="612" x2="708" y2="652"/>
+    <line x1="848" y1="612" x2="848" y2="652"/>
+  </g>
+  <g fill="#FFFFFF" stroke="#DBE5F5" stroke-width="2">
+    <rect x="330" y="652" width="36" height="36" rx="12"/>
+    <rect x="470" y="652" width="36" height="36" rx="12"/>
+    <rect x="690" y="652" width="36" height="36" rx="12"/>
+    <rect x="830" y="652" width="36" height="36" rx="12"/>
+  </g>
+  <g fill="#C8D6EC">
+    <circle cx="348" cy="670" r="5"/>
+    <circle cx="708" cy="670" r="5"/>
+    <circle cx="848" cy="670" r="5"/>
+  </g>
+  <circle cx="488" cy="670" r="5" fill="#0152D9"/>
+</svg>

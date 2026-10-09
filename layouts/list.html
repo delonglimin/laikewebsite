@@ -1,0 +1,166 @@
+{{- /* 覆盖主题 list.html
+   主题原版问题：
+     1. 把「第一篇文章」当头条渲染（index .RegularPages 0），空栏目会取到 nil 直接报错；
+     2. 带英文 Read More / 标签云，不适合中文官网；
+     3. 标签只能跳转，不能就地筛选。
+   这里改成通用栏目页模板：页头 + 标签筛选 + _index.md 正文 + 子页面卡片。
+   - 刻意不使用 .Paginate —— 否则空栏目也会生成 /栏目/page/1/ 重复页，对 SEO 不利。
+   - 标签筛选：点击即时过滤当前列表（JS），无 JS 时退回 /tags/标签名/ 聚合页。
+   该模板同时兜底 term 页（/tags/xxx/），此时展示该标签下的文章。 */ -}}
+
+{{ define "main" }}
+  {{- /* ── 标签筛选数据 ─────────────────────────────────────────
+       栏目页：只取该栏目文章实际用到的标签
+       term 页：取全站标签（方便切换到别的标签）           */ -}}
+  {{ $isTerm := eq .Kind "term" }}
+  {{ $sectionTags := slice }}
+  {{ if not $isTerm }}
+    {{ range .RegularPages }}
+      {{ range .Params.tags }}{{ $sectionTags = $sectionTags | append . }}{{ end }}
+    {{ end }}
+    {{ $sectionTags = $sectionTags | uniq }}
+  {{ end }}
+  {{ $showTags := or $isTerm (gt (len $sectionTags) 0) }}
+
+  <section class="py-16 xl:py-24">
+    <div class="container mx-auto px-4">
+      <!-- 页头：仅标题 + 分隔线（description 只用于 SEO，不在页面显示） -->
+      <header class="mx-auto mb-10 max-w-3xl text-center">
+        <h1 class="markdown-title text-4xl font-bold xl:text-5xl">
+          {{- if $isTerm }}标签：{{ .Data.Term }}{{ else }}{{ .Title }}{{ end -}}
+        </h1>
+        <div class="bg-primary mx-auto mt-8 h-1 w-16 rounded-full"></div>
+      </header>
+
+      <!-- 标签筛选 -->
+      {{ if $showTags }}
+        <div id="tag-filter" class="mb-16 flex flex-wrap items-center justify-center gap-3">
+          {{ if not $isTerm }}
+            <button type="button" class="lk-tag is-active" data-tag="*">全部</button>
+          {{ end }}
+          {{ range site.Taxonomies.tags }}
+            {{- /* 用 Data.Term 取标签原始写法：.Page.Title 会被 Hugo 首字母大写，
+                   与 front matter 里的小写标签对不上 */ -}}
+            {{ $term := .Page.Data.Term }}
+            {{ if or $isTerm (in $sectionTags $term) }}
+              <a class="lk-tag{{ if and $isTerm (eq $.Data.Term $term) }} is-active{{ end }}"
+                 href="{{ .Page.RelPermalink }}"
+                 data-tag="{{ $term }}">
+                {{ $term }}<span class="lk-tag-count">{{ .Count }}</span>
+              </a>
+            {{ end }}
+          {{ end }}
+        </div>
+      {{ end }}
+
+      <!-- 栏目正文（content/<栏目>/_index.md） -->
+      {{ with .Content }}
+        <div class="prose mx-auto mb-16 max-w-4xl">{{ . }}</div>
+      {{ end }}
+
+      <!-- 子页面卡片列表 -->
+      {{ with .RegularPages }}
+        <div id="post-list" class="grid gap-12 lg:grid-cols-2 xl:grid-cols-3">
+          {{ range . }}
+            <article class="lk-post group" data-tags="{{ with .Params.tags }}{{ delimit . " " }}{{ end }}">
+              <a class="block" href="{{ .RelPermalink }}">
+                {{- /* 产品卡片：界面截图完整展示（contain + 浅底），不裁切；其他栏目仍为满铺裁切 */ -}}
+                {{- $isProduct := eq .Section "products" -}}
+                <div
+                  class="{{ if $isProduct }}bg-[#F4F7FC] ring-1 ring-gray-900/5{{ else }}bg-primary/10{{ end }} aspect-video w-full overflow-hidden rounded-2xl"
+                >
+                  {{ if .Params.image }}
+                    {{- /* alt 用条目自身标题：此前误用栏目名，导致同栏目所有卡片 alt 相同 */ -}}
+                    {{- $alt := .Title -}}
+                    {{- if $isProduct -}}
+                      {{- $alt = printf "%s系统界面截图 - %s" .Title site.Params.shortName -}}
+                    {{- end -}}
+                    {{ partial "utilities/image.html" (dict
+                      "src" .Params.image
+                      "class" (cond $isProduct
+                        "h-full w-full object-contain p-3"
+                        "h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105")
+                      "alt" $alt
+                      )
+                    }}
+                  {{ else if eq .Section "products" }}
+                    {{- /* 产品卡片暂无配图：输出占位提示，后续在 front matter 补 image 即自动替换 */ -}}
+                    <div
+                      class="border-primary/20 text-primary/55 flex h-full w-full flex-col items-center justify-center gap-3 border-2 border-dashed"
+                    >
+                      <i class="{{ .Params.icon | default "fa-solid fa-image" }} text-3xl" aria-hidden="true"></i>
+                      <span class="text-xs">配图位置预留</span>
+                    </div>
+                  {{ end }}
+                </div>
+                <h2 class="group-hover:text-primary mt-6 text-xl font-semibold leading-relaxed transition-colors duration-300">
+                  {{ .Title }}
+                </h2>
+              </a>
+              <p class="mt-3 leading-relaxed text-[#5A6270]">{{ .Summary }}</p>
+              <div class="mt-4 flex flex-wrap items-center gap-3">
+                {{ with .Date }}
+                  <span class="text-sm text-[#8A919E]">{{ .Format "2006-01-02" }}</span>
+                {{ end }}
+                {{ range .Params.tags }}
+                  <span class="rounded-full bg-[#EDF1F8] px-3 py-1 text-xs text-[#5A6270]">{{ . }}</span>
+                {{ end }}
+              </div>
+            </article>
+          {{ end }}
+        </div>
+        <p id="tag-empty" class="hidden py-20 text-center text-[#8A919E]">该标签下暂无内容。</p>
+      {{ end }}
+    </div>
+  </section>
+
+  {{- /* 栏目页启用即时筛选（term 页已是过滤结果，不需要） */ -}}
+  {{ if and $showTags (not $isTerm) }}
+    <script>
+      (function () {
+        var bar = document.getElementById('tag-filter');
+        var wrap = document.getElementById('post-list');
+        if (!bar || !wrap) return;
+        var posts = wrap.querySelectorAll('.lk-post');
+        var pills = bar.querySelectorAll('.lk-tag');
+        var empty = document.getElementById('tag-empty');
+
+        function apply(tag) {
+          var shown = 0;
+          for (var i = 0; i < posts.length; i++) {
+            var own = (posts[i].getAttribute('data-tags') || '').split(/\s+/);
+            var hit = tag === '*' || own.indexOf(tag) !== -1;
+            posts[i].classList.toggle('hidden', !hit);
+            if (hit) shown++;
+          }
+          if (empty) empty.classList.toggle('hidden', shown > 0);
+        }
+
+        function activate(el) {
+          for (var i = 0; i < pills.length; i++) pills[i].classList.remove('is-active');
+          el.classList.add('is-active');
+        }
+
+        for (var i = 0; i < pills.length; i++) {
+          pills[i].addEventListener('click', function (e) {
+            e.preventDefault();
+            var t = this.getAttribute('data-tag');
+            apply(t);
+            activate(this);
+            var u = new URL(window.location.href);
+            if (t === '*') { u.searchParams.delete('tag'); } else { u.searchParams.set('tag', t); }
+            history.replaceState(null, '', u.toString());
+          });
+        }
+
+        /* 支持 /blog/?tag=xxx 直达 */
+        var init = new URL(window.location.href).searchParams.get('tag');
+        if (init) {
+          for (var k = 0; k < pills.length; k++) {
+            if (pills[k].getAttribute('data-tag') === init) { pills[k].click(); break; }
+          }
+        }
+      })();
+    </script>
+  {{ end }}
+{{ end }}

@@ -27,3 +27,9 @@ Thumbs.db
 # Optional: if you use Netlify or Vercel, ignore their local folders
 .netlify/
 .vercel/
+
+# Local assistant workspace data (do not delete, do not commit)
+.workbuddy/
+
+# 视频源素材（单文件可达数百 MB，仅本地保留；上线用成品在 static/video/）
+assets/video/

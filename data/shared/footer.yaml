@@ -1,26 +1,33 @@
+# ============================================================
+# 页脚展示数据
+# 注意：联系方式/版权已统一收敛到 config/_default/params.yaml，
+#       此处只放「页脚如何呈现」，避免同一信息两处维护。
+# ============================================================
 enable: true
 
+# 页脚第二列：快速导航（取 menus.yaml 的 footer 菜单）
+nav:
+  title: "快速导航"
+
+# 页脚第三列：联系方式
+# 注意：本项目的 layouts/_partials/shared/footer.html 覆盖版**不读取** items，
+#       联系方式直接从 config/_default/params.yaml 的 contact 渲染。
+#       此处的 items 仅作主题原版的兜底数据保留，链接同样指向「关于我们」页。
+# 说明：链接统一指向「关于我们」页的联系我们区块，不再直接拨号
 contact:
-  title: "Contact"
+  title: "联系方式"
   items:
-    - label: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. "
-      link: ""
+    - label: "许得龙"
+      link: "/about/#contact"
+    - label: "15224318283"
+      link: "/about/#contact"
+    - label: "山东省聊城市东昌府区西关街数据标注基地 6 楼"
+      link: "/about/#contact"
 
-    - label: "+908 89097 890"
-      link: ""
+# 页脚第四列：官方渠道
+# 有公众号/视频号/抖音时再填，留空数组则该列自动隐藏
+# 格式：- title: "微信公众号" / icon: "fa-brands fa-weixin" / link: "https://..."
+social: []
 
-social:
-  - title: "Facebook"
-    icon: "fa-brands fa-facebook"
-    link: "#"
-  - title: "Twitter"
-    icon: "fa-brands fa-twitter"
-    link: "#"
-  - title: "Instagram"
-    icon: "fa-brands fa-instagram"
-    link: "#"
-  - title: "LinkedIn"
-    icon: "fa-brands fa-linkedin"
-    link: "#"
-
-copyright: "Copyright ® 2021 Lorem All rights Rcerved"
+# 版权（留空则回落到 params.yaml 的 copyright）
+copyright: ""

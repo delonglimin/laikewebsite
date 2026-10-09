@@ -1,14 +1,14 @@
-enable: true
+enable: false
 
 items:
-  - title: "Lorem ipsum is simply dummy text"
-    text: "KODEX TECHNOLOGY (PVT) LTD is a team of experienced mobile and web applications and website builders measuring dozens of completed projects. We build and develop mobile applications for several top platforms, including Android  & IOS. "
+  - title: "以硬核资质背书的创新实力"
+    text: "国家级高新技术企业、山东省专精特新中小企业、瞪羚企业；拥有发明专利 11 项、软件著作权 50 余项、自主工业软件产品 9 项，参与制定 2 项聊城市地方标准与 3 项山东省人工智能团体标准，是聊城市新一代信息技术产业链链主企业。"
     button:
-      label: "View More"
-      link: "#"
+      label: "关于我们"
+      link: "/about/"
 
-  - title: "Lorem ipsum is simply dummy text"
-    text: "KODEX TECHNOLOGY (PVT) LTD is a team of experienced mobile and web applications and website builders measuring dozens of completed projects. We build and develop mobile applications for several top platforms, including Android  & IOS. "
+  - title: "产学研深度融合的技术底座"
+    text: "与上海交通大学、山东省科学院（国家超级计算济南中心）、意大利柯马（Comau）等共建研发平台，首席科学家 Mark Stephen Fox 院士 1979 年创立卡内基梅隆大学机器人研究所，博士团队长期扎根工业一线。"
     button:
-      label: "View More"
-      link: "#"
+      label: "了解服务"
+      link: "/services/"

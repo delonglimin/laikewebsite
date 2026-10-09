@@ -1,0 +1,7 @@
+{{- /* 覆盖主题 outline 按钮
+  1. 兼容 .href / .link 两种参数名（主题 highlights.html 传的是 link，原版读 href，按钮链接为空）
+  2. 加 safeURL：tel: 协议不在 Go html/template 白名单内 */ -}}
+{{ $url := .href }}{{ if not $url }}{{ $url = .link }}{{ end }}
+<a class="bg-white hover:bg-primary border border-primary rounded-lg px-14 py-2 text-primary hover:text-white duration-500" href="{{ $url | safeURL }}">
+  {{ .label }}
+</a>

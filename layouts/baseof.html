@@ -1,0 +1,122 @@
+<!doctype html>
+{{- /* 覆盖主题 baseof：语言属性、SEO 元信息、结构化数据、字体与资源加载 */ -}}
+<html lang="{{ site.Params.htmlLang | default "zh-CN" }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    {{- /* title / description / keywords / canonical / robots / OG / Twitter / JSON-LD */ -}}
+    {{ partial "seo/head.html" . }}
+
+    <!-- Favicons -->
+    {{ with resources.Get "favicon.ico" }}
+      <link rel="icon" type="image/x-icon" href="{{ .RelPermalink }}?v=2" />
+    {{ end }}
+    {{ with resources.Get "favicon.svg" }}
+      <link rel="icon" type="image/svg+xml" href="{{ .RelPermalink }}?v=2" />
+    {{ end }}
+    {{ with resources.Get "apple-touch-icon.png" }}
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ .RelPermalink }}?v=2" />
+    {{ end }}
+    {{ with resources.Get "favicon-32x32.png" }}
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ .RelPermalink }}?v=2" />
+    {{ end }}
+    {{ with resources.Get "favicon-16x16.png" }}
+      <link rel="icon" type="image/png" sizes="16x16" href="{{ .RelPermalink }}?v=2" />
+    {{ end }}
+    {{ with resources.Get "site.webmanifest" }}
+      {{ with resources.ExecuteAsTemplate "site.webmanifest" $ . }}
+        <link rel="manifest" href="{{ .RelPermalink }}?v=2" />
+      {{ end }}
+    {{ end }}
+
+    <meta name="msapplication-TileColor" content="{{ site.Params.favicons.themeColor | default "#0152D9" }}" />
+    <meta name="theme-color" content="{{ site.Params.favicons.themeColor | default "#0152D9" }}" />
+
+    <!-- RSS -->
+    {{ range .AlternativeOutputFormats -}}
+      {{ printf ` <link rel="%s" type="%s" href="%s" title="%s" /> ` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+    {{ end -}}
+
+    <!-- Load Tailwind -->
+    {{ with (templates.Defer (dict "key" "global")) }}
+      {{ with resources.Get "css/styles.css" }}
+        {{ with resources.ExecuteAsTemplate "css/styles.css" $ . }}
+          {{ $opts := dict "inlineImports" true "optimize" true "minify" true }}
+          {{ with . | css.TailwindCSS $opts | fingerprint }}
+            <link
+              rel="stylesheet"
+              href="{{ .RelPermalink }}"
+              integrity="{{ .Data.Integrity }}"
+              crossorigin="anonymous"
+            />
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+
+    <!-- Load Brand Overrides (中文字体栈 / 排版微调) -->
+    {{ with resources.Get "css/brand.css" }}
+      {{ with . | minify | fingerprint }}
+        <link
+          rel="stylesheet"
+          href="{{ .RelPermalink }}"
+          integrity="{{ .Data.Integrity }}"
+          crossorigin="anonymous"
+        />
+      {{ end }}
+    {{ end }}
+
+    <!-- Load Fonts -->
+    {{ with resources.Get "css/fonts.css" }}
+      {{ with resources.ExecuteAsTemplate "css/fonts.css" $ . }}
+        {{ $opts := dict "inlineImports" true "optimize" true "minify" true }}
+        {{ with . | css.TailwindCSS $opts | fingerprint }}
+          <link
+            rel="stylesheet"
+            href="{{ .RelPermalink }}"
+            integrity="{{ .Data.Integrity }}"
+            crossorigin="anonymous"
+          />
+        {{ end }}
+      {{ end }}
+    {{ end }}
+
+    <!-- Load Font Awesome -->
+    {{ with resources.Get "vendor/fontawesome-free/css/all.min.css" }}
+      {{ with . | fingerprint }}
+        <link
+          rel="stylesheet"
+          href="{{ .RelPermalink }}"
+          integrity="{{ .Data.Integrity }}"
+          crossorigin="anonymous"
+        />
+      {{ end }}
+    {{ end }}
+
+    <!-- Publish Font Awesome Fonts -->
+    {{ with resources.Match "vendor/fontawesome-free/webfonts/*" }}
+      {{ range . }}
+        {{ .Publish }}
+      {{ end }}
+    {{ end }}
+
+    <!-- Load JS -->
+    {{- $main := resources.Get "js/main.js" -}}
+    {{ with $main }}
+      {{- $main = $main | js.Build (dict "minify" "true") | fingerprint -}}
+      {{ if hugo.IsProduction }}
+        {{ $main = $main | minify }}
+      {{ end }}
+      <script src="{{ $main.RelPermalink }}" defer></script>
+    {{ end }}
+  </head>
+  <body class="">
+    <div class="flex min-h-screen flex-col">
+      {{ partial "shared/header" . }}
+      <div class="grow">{{ block "main" . }}{{ end }}</div>
+      {{ partial "shared/footer" . }}
+    </div>
+  </body>
+</html>

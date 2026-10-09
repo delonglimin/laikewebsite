@@ -1,0 +1,61 @@
+{{- /* ==========================================================================
+  通用配图位（image-slot）—— 产品页 / 服务页共用
+  用法：{{ partial "shared/image-slot.html" (dict
+           "src"   $page.Params.cover      // 留空 → 渲染虚线占位框
+           "alt"   "物联网平台界面"
+           "ratio" "aspect-[4/3]"          // 可选，默认 aspect-[4/3]
+           "fit"   "contain"               // 可选：cover(默认，裁切铺满) | contain(完整展示，留白)
+           "hint"  "建议尺寸 1600×1200"     // 可选，占位框第二行说明
+       ) }}
+
+  支持两种图片来源，自动判别：
+    1. assets/images/**   → 走 Hugo 图片管线（自动 webp + 响应式 srcset）
+    2. static/images/**   → 直接输出原始文件（路径以 / 开头即可）
+  SVG 走 as-is 发布，不会做无损缩放。
+   ========================================================================== */ -}}
+
+{{- $src := .src -}}
+{{- $alt := .alt | default "配图" -}}
+{{- $ratio := .ratio | default "aspect-[4/3]" -}}
+{{- $hint := .hint | default "在 front matter 里填写路径即可替换" -}}
+
+{{- /* fit=contain：图片完整展示，容器按 ratio 留白（浅底 + 细描边，视觉上像一张装裱好的截图）
+       fit=cover（默认）：图片等比裁切铺满容器，不留白 */ -}}
+{{- $contain := eq (.fit | default "cover") "contain" -}}
+{{- $imgClass := printf "%s w-full rounded-2xl object-cover shadow-lg shadow-gray-900/10" $ratio -}}
+{{- if $contain -}}
+  {{- $imgClass = printf "%s w-full rounded-2xl bg-[#F4F7FC] object-contain p-3 shadow-sm ring-1 ring-gray-900/5" $ratio -}}
+{{- end -}}
+
+{{- if $src -}}
+
+  {{- $resource := "" -}}
+  {{- with resources.Get $src }}{{ $resource = . }}{{ end -}}
+  {{- with page.Resources.Get $src }}{{ $resource = . }}{{ end -}}
+
+  {{- if $resource -}}
+    {{ partial "utilities/image.html" (dict
+      "src" $src
+      "class" $imgClass
+      "alt" $alt)
+    }}
+  {{- else -}}
+    <img
+      class="{{ $imgClass }}"
+      src="{{ $src | relURL }}"
+      alt="{{ $alt }}"
+      loading="lazy"
+    />
+  {{- end -}}
+
+{{- else -}}
+
+  <div
+    class="{{ $ratio }} flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/25 bg-primary/5 px-6 text-center"
+  >
+    <i class="fa-solid fa-image text-3xl text-primary/35" aria-hidden="true"></i>
+    <span class="text-sm font-medium text-primary/75">配图位置预留</span>
+    <span class="text-xs leading-relaxed text-primary/50">{{ $hint }}</span>
+  </div>
+
+{{- end -}}

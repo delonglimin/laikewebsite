@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1340 280" width="1340" height="280" role="img" aria-labelledby="laikeTitle laikeDesc">
+  <title id="laikeTitle">LAIKE 品牌标识</title>
+  <desc id="laikeDesc">莱柯智能机器人品牌标识，图形与字标均为品牌蓝 #0152D9。</desc>
+
+  <g fill="#0152D9">
+    <path d="M150 0 L241 14 L233 69 L353 55 L313 110 L66 149 Z"/>
+    <path d="M254 145 L290 279 L215 279 L193 265 L189 235 L178 226 L0 245 L45 180 Z"/>
+    <path d="M480 60 H520 V200 H600 V240 H480 Z"/>
+    <path fill-rule="evenodd" d="M710 60 L765 60 L830 240 L790 240 L770 200 L700 200 L690 240 L650 240 Z M740 113 L764 170 L716 170 Z"/>
+    <path d="M880 60 H920 V240 H880 Z"/>
+    <path d="M1000 60 H1040 V142 L1110 60 H1150 L1083 139 L1150 240 H1110 L1060 165 L1040 195 V240 H1000 Z"/>
+    <path d="M1200 60 H1340 V100 H1240 V130 H1340 V170 H1240 V200 H1340 V240 H1200 Z"/>
+  </g>
+</svg>

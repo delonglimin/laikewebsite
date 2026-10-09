@@ -1,0 +1,134 @@
+{{- /* 覆盖主题 footer：中文企业官网页脚（品牌 / 快速导航 / 联系方式 / 官方渠道） */ -}}
+{{- $f := site.Data.shared.footer -}}
+{{- $contact := site.Params.contact -}}
+
+{{ with site.Data.shared.subscribe }}{{ if .enable }}{{ partial "blocks/shared/subscribe" . }}{{ end }}{{ end }}
+
+<footer class="border-t border-[#E9ECF2] pt-16 pb-8">
+  <div class="container mx-auto grid gap-12 px-4 xl:grid-cols-12">
+    {{- /* ── 品牌 ── */ -}}
+    <div class="flex flex-col justify-center xl:col-span-4">
+      <a class="inline-flex items-center" href="{{ site.Home.RelPermalink }}" aria-label="{{ site.Title }}">
+        {{ with site.Params.logo }}
+          {{ partial "utilities/image.html" (dict "src" . "class" "h-9 w-auto" "alt" site.Title) }}
+        {{ else }}
+          <span class="text-primary text-2xl font-semibold">{{ site.Title }}</span>
+        {{ end }}
+      </a>
+      <p class="text-primary mt-5 text-base font-medium">{{ site.Params.slogan }}</p>
+    </div>
+
+    {{- /* ── 快速导航（两行三列） ── */ -}}
+    <div class="xl:col-span-4">
+      <h2 class="text-[#111827] mb-5 text-base font-semibold">{{ $f.nav.title | default "快速导航" }}</h2>
+      <ul class="grid grid-cols-3 gap-x-4 gap-y-3">
+        {{ range site.Menus.footer }}
+          <li>
+            {{- /* 外部链接（http/https 开头）自动新标签打开 */ -}}
+            <a class="text-[#5A6270] text-sm transition-colors hover:text-[#0152D9]" href="{{ .URL | safeURL }}"{{ if hasPrefix .URL "http" }} target="_blank" rel="noopener"{{ end }}>{{ .Name }}</a>
+          </li>
+        {{ end }}
+      </ul>
+    </div>
+
+    {{- /* ── 联系方式（整体垂直居中） ── */ -}}
+    <div class="flex flex-col justify-center xl:col-span-4">
+      <h2 class="text-[#111827] mb-5 text-base font-semibold">{{ $f.contact.title | default "联系方式" }}</h2>
+      <ul class="space-y-3 text-sm text-[#5A6270]">
+        <li class="flex gap-2">
+          <i class="fa-solid fa-phone mt-1 text-[#0152D9]" aria-hidden="true"></i>
+          {{- /* 按需求：联系方式不再直接拨号，统一跳「关于我们」页的联系我们区块 */ -}}
+          <a class="transition-colors hover:text-[#0152D9]" href="{{ "/about/#contact" | relURL }}">{{ $contact.person }} {{ $contact.phone }}</a>
+        </li>
+        {{ with $contact.email }}
+          <li class="flex gap-2">
+            <i class="fa-solid fa-envelope mt-1 text-[#0152D9]" aria-hidden="true"></i>
+            <a class="transition-colors hover:text-[#0152D9]" href="mailto:{{ . }}">{{ . }}</a>
+          </li>
+        {{ end }}
+        <li class="flex gap-2">
+          <i class="fa-solid fa-location-dot mt-1 text-[#0152D9]" aria-hidden="true"></i>
+          <span class="leading-relaxed">{{ $contact.address }}</span>
+        </li>
+      </ul>
+
+      {{- /* 官方渠道：无数据时整块隐藏 */ -}}
+      {{ with $f.social }}
+        <ul class="mt-6 flex flex-wrap items-center gap-3">
+          {{ range . }}
+            <li>
+              <a
+                class="flex size-10 items-center justify-center rounded-full bg-[#EEF3FE] text-[#0152D9] transition-transform duration-300 hover:scale-110"
+                href="{{ .link }}"
+                aria-label="{{ .title }}"
+                rel="noopener"
+              >
+                <i class="{{ .icon }}" aria-hidden="true"></i>
+              </a>
+            </li>
+          {{ end }}
+        </ul>
+      {{ end }}
+    </div>
+  </div>
+
+  <div class="container mx-auto mt-12 px-4">
+    {{- /* ── 主营业务（关键词内链，强化本地搜索语义） ── */ -}}
+    <div class="pb-8">
+      <h2 class="text-[#8A919E] mb-4 text-xs font-semibold tracking-widest">主营业务</h2>
+      <ul class="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#5A6270]">
+        {{- range slice
+          (dict "label" "聊城软件开发" "url" "/services/software/")
+          (dict "label" "聊城人工智能应用开发" "url" "/services/ai/")
+          (dict "label" "聊城企业数字化转型" "url" "/services/digitalization/")
+          (dict "label" "聊城系统集成" "url" "/services/integration/")
+          (dict "label" "聊城信息化咨询" "url" "/services/consulting/")
+          (dict "label" "工业互联网平台" "url" "/products/")
+          (dict "label" "生产管理 MES" "url" "/products/mes/")
+          (dict "label" "企业 ERP" "url" "/products/erp/")
+          (dict "label" "智慧物业系统" "url" "/products/property/")
+          (dict "label" "智慧社区平台" "url" "/products/smart-community/")
+          (dict "label" "数据标注采集" "url" "/data-annotation/")
+        }}
+          <li>
+            <a class="transition-colors hover:text-[#0152D9]" href="{{ .url | relURL }}">{{ .label }}</a>
+          </li>
+        {{- end }}
+      </ul>
+      {{ with site.Params.seo.serviceAreaText }}
+        <p class="mt-5 text-xs leading-relaxed text-[#8A919E]">{{ . }}</p>
+      {{ end }}
+    </div>
+
+    <div
+      class="flex flex-col items-center justify-center gap-3 border-t border-[#E9ECF2] pt-6 text-center text-xs text-[#8A919E] xl:flex-row"
+    >
+      <p>{{ $f.copyright | default site.Params.copyright }}</p>
+      {{ with site.Params.icp }}
+        <a
+          class="transition-colors hover:text-[#0152D9]"
+          href="https://beian.miit.gov.cn/"
+          target="_blank"
+          rel="noopener nofollow"
+          >{{ . }}</a
+        >
+      {{ end }}
+      {{- /* ── 站点辅助链接：网站地图 / llms.txt（AI 索引） ── */ -}}
+      <nav class="flex items-center gap-3" aria-label="站点辅助导航">
+        <a
+          class="transition-colors hover:text-[#0152D9]"
+          href="{{ "sitemap.xml" | relURL }}"
+          title="网站地图（XML Sitemap）"
+          >网站地图</a
+        >
+        <span class="text-[#D8DDE5]" aria-hidden="true">·</span>
+        <a
+          class="transition-colors hover:text-[#0152D9]"
+          href="{{ "llms.txt" | relURL }}"
+          title="面向 AI 大模型的站点内容索引"
+          >llms.txt</a
+        >
+      </nav>
+    </div>
+  </div>
+</footer>

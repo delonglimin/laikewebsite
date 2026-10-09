@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# 后台/临时路径不收录
+Disallow: /tags/
+Disallow: /*.json$
+
+# 站点地图（绝对地址由 baseURL 决定）
+Sitemap: {{ "sitemap.xml" | absURL }}

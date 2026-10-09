@@ -1,42 +1,160 @@
+# ============================================================
+# 站点导航
+#   main    —— 顶部主导航（从左到右按 weight 排序）
+#             带 children 的条目会自动渲染为下拉菜单（桌面 hover / 移动端点击展开）
+#   buttons —— 顶部右侧按钮（当前已隐藏，数据保留）
+#   footer  —— 页脚「快速导航」
+#
+# 说明：「数据标注采集」为外部链接（飞书知识库文档），
+#       模板对 http/https 开头的 URL 自动加 target="_blank" rel="noopener"
+# ============================================================
+
 main:
-  - name: "Home"
+  - name: "首页"
     url: "/"
     weight: 1
 
-  - name: "About Us"
-    url: "/about"
+  # ── 服务（带下拉子菜单）──────────────────────────────────
+  - name: "服务"
+    identifier: "services"
+    url: "/services/"
     weight: 2
 
-  - name: "Services"
-    url: "/services"
+  - name: "AI 应用开发"
+    parent: "services"
+    url: "/services/ai/"
+    weight: 1
+
+  - name: "企业数字化"
+    parent: "services"
+    url: "/services/digitalization/"
+    weight: 2
+
+  - name: "软件开发"
+    parent: "services"
+    url: "/services/software/"
     weight: 3
 
-  - name: "Blog"
-    url: "/blog"
+  - name: "系统集成"
+    parent: "services"
+    url: "/services/integration/"
     weight: 4
 
-buttons:
-  - name: "Contact Us"
-    url: "/contact"
+  - name: "企业咨询"
+    parent: "services"
+    url: "/services/consulting/"
     weight: 5
+
+  # ── 产品（带下拉子菜单）──────────────────────────────────
+  - name: "产品"
+    identifier: "products"
+    url: "/products/"
+    weight: 3
+
+  - name: "物联网 IoT"
+    parent: "products"
+    url: "/products/iot/"
+    weight: 1
+
+  - name: "数字孪生"
+    parent: "products"
+    url: "/products/digital-twin/"
+    weight: 2
+
+  - name: "生产管理 MES"
+    parent: "products"
+    url: "/products/mes/"
+    weight: 3
+
+  - name: "企业 ERP"
+    parent: "products"
+    url: "/products/erp/"
+    weight: 4
+
+  - name: "智慧物业"
+    parent: "products"
+    url: "/products/property/"
+    weight: 5
+
+  - name: "智慧社区"
+    parent: "products"
+    url: "/products/smart-community/"
+    weight: 6
+
+  - name: "商城系统"
+    parent: "products"
+    url: "/products/mall/"
+    weight: 7
+
+  # ── 定制案例（带下拉子菜单）──────────────────────────────
+  - name: "定制案例"
+    identifier: "cases"
+    url: "/custom-cases/"
+    weight: 4
+
+  - name: "智慧林场"
+    parent: "cases"
+    url: "/custom-cases/smart-forestry/"
+    weight: 1
+
+  - name: "数字孪生医院"
+    parent: "cases"
+    url: "/custom-cases/digital-hospital/"
+    weight: 2
+
+  - name: "智慧能源平台"
+    parent: "cases"
+    url: "/custom-cases/smart-energy/"
+    weight: 3
+
+  - name: "党建引领数字治理"
+    parent: "cases"
+    url: "/custom-cases/party-building/"
+    weight: 4
+
+  - name: "数据标注采集"
+    url: "https://laikezhineng.feishu.cn/wiki/TVHywlH6wi0WBOk9FfacXLyQnve"
+    weight: 5
+
+  - name: "关于我们"
+    url: "/about/"
+    weight: 6
+
+  - name: "资讯"
+    url: "/blog/"
+    weight: 7
+
+# 右侧 CTA：已按需求统一指向「关于我们」页的联系我们区块（原为 tel: 直接拨号）
+buttons:
+  - name: "联系我们"
+    url: "/about/#contact"
+    weight: 1
 
 footer:
-  - name: "Home"
+  - name: "首页"
     url: "/"
     weight: 1
 
-  - name: "About Us"
-    url: "/about"
+  - name: "服务"
+    url: "/services/"
     weight: 2
 
-  - name: "Services"
-    url: "/services"
+  - name: "产品"
+    url: "/products/"
     weight: 3
 
-  - name: "Blog"
-    url: "/blog"
+  - name: "定制案例"
+    url: "/custom-cases/"
     weight: 4
 
-  - name: "Contact Us"
-    url: "/contact"
+  - name: "数据标注采集"
+    url: "https://laikezhineng.feishu.cn/wiki/TVHywlH6wi0WBOk9FfacXLyQnve"
     weight: 5
+
+  - name: "关于我们"
+    url: "/about/"
+    weight: 6
+
+  - name: "资讯"
+    url: "/blog/"
+    weight: 7

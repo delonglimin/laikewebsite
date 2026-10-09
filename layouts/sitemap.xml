@@ -1,0 +1,23 @@
+{{- /* ==========================================================================
+  覆盖主题 sitemap.xml
+  与 Hugo 内置模板的区别：过滤掉 tag term 页（/tags/xxx/）
+  —— 这些页面是 noindex 且被 robots.txt 屏蔽，不应出现在 sitemap 里（自相矛盾会降低
+     搜索引擎对 sitemap 的信任度）。栏目页/内容页全部保留。
+  ========================================================================== */ -}}
+{{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {{- range where site.Pages "Kind" "ne" "term" }}
+  <url>
+    <loc>{{ .Permalink }}</loc>
+    {{- if not .Lastmod.IsZero }}
+    <lastmod>{{ safeHTML (.Lastmod.Format "2006-01-02T15:04:05-07:00") }}</lastmod>
+    {{- end }}
+    {{- with .Sitemap.ChangeFreq }}
+    <changefreq>{{ . }}</changefreq>
+    {{- end }}
+    {{- if ge .Sitemap.Priority 0.0 }}
+    <priority>{{ .Sitemap.Priority }}</priority>
+    {{- end }}
+  </url>
+  {{- end }}
+</urlset>

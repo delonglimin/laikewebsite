@@ -1,0 +1,8 @@
+{{- /* 覆盖主题 primary 按钮
+  1. 加 safeURL：菜单里的 tel: 协议不在 Go html/template 的协议白名单内，
+     不加会被替换成 #ZgotmplZ，导致「联系我们」按钮点不动。
+  2. 兼容 .href / .link 两种参数名（主题各区块传参不一致）。 */ -}}
+{{ $url := .href }}{{ if not $url }}{{ $url = .link }}{{ end }}
+<a class="bg-primary hover:bg-primary/90 rounded-lg px-14 py-2 text-white duration-500" href="{{ $url | safeURL }}">
+  {{ .label }}
+</a>

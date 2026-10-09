@@ -1,0 +1,94 @@
+/* ============================================================
+   莱柯官网 · 品牌样式表
+   在主题 styles.css 之后加载，用于「覆盖」而非「替换」。
+
+   为什么不直接覆盖 assets/css/styles.css：
+     主题的 styles.css 通过 `@import './shared/_fontawesome-free.css'`
+     内联了 FontAwesome，相对路径依赖主题目录结构；在项目根复制一份会断链。
+     因此这里用独立样式表做覆盖，主题文件保持原样。
+   ============================================================ */
+
+/* ── 中文字体栈 ────────────────────────────────────────────────
+   英文/数字优先 Poppins（品牌字体），中文按平台最优回落。
+   未分层书写，优先级高于 Tailwind 的 @layer base，必然覆盖生效。 */
+html {
+  font-family:
+    "Poppins",
+    -apple-system,
+    BlinkMacSystemFont,
+    "PingFang SC",
+    /* macOS / iOS */ "HarmonyOS Sans SC",
+    /* HarmonyOS */ "MiSans",
+    /* 小米 */ "Source Han Sans SC",
+    /* 思源黑体 */ "Noto Sans CJK SC",
+    "Microsoft YaHei",
+    /* Windows */ "WenQuanYi Micro Hei",
+    /* Linux */ "Heiti SC",
+    sans-serif;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── 中文排版微调 ────────────────────────────────────────────── */
+body {
+  overflow-wrap: break-word;
+}
+
+/* 中文标题若沿用西文字距会显得松散，收紧一点点 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: -0.01em;
+}
+
+/* 中文正文行高比西文略放宽，可读性更好 */
+.prose,
+.prose p,
+.prose li {
+  line-height: 1.9;
+}
+
+/* ── 品牌色衍生工具类 ────────────────────────────────────────── */
+.text-brand {
+  color: var(--color-primary);
+}
+
+.bg-brand {
+  background-color: var(--color-primary);
+}
+
+/* ── 资讯标签筛选（lc-tag：独立于 Tailwind，避免动态类名不被生成） ── */
+#tag-filter .lk-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.25rem;
+  border: 0;
+  border-radius: 9999px;
+  background-color: rgba(1, 82, 217, 0.1);
+  color: var(--color-primary);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+#tag-filter .lk-tag:hover {
+  background-color: rgba(1, 82, 217, 0.22);
+}
+
+#tag-filter .lk-tag.is-active {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+#tag-filter .lk-tag-count {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+

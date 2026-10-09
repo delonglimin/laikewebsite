@@ -1,0 +1,294 @@
+{{- /* ==========================================================================
+  JSON-LD 结构化数据（schema.org）——由 seo/head.html 调用
+
+  传入：.page / .title / .desc / .ogURL / .logoURL
+
+  输出 @graph（稳定节点 ID，便于互相引用）：
+    #organization  Organization + LocalBusiness（含 geo / areaServed / knowsAbout / award）
+    #website       WebSite
+    <页面URL>#webpage  WebPage（栏目页为 CollectionPage，含 ItemList）
+    BreadcrumbList（非首页）
+  并按内容类型追加：
+    services/<x>/    → Service（features → hasOfferCatalog）
+    products/<x>/    → SoftwareApplication（features → featureList）
+    blog/<x>/        → BlogPosting
+    custom-cases/<x>/→ CreativeWork + VideoObject
+   ========================================================================== */ -}}
+
+{{- $page := .page -}}
+{{- $title := .title -}}
+{{- $desc := .desc -}}
+{{- $ogURL := .ogURL -}}
+{{- $logoURL := .logoURL -}}
+
+{{- $company := site.Params.company -}}
+{{- $contact := site.Params.contact -}}
+{{- $seo := site.Params.seo -}}
+{{- $base := site.BaseURL -}}
+{{- $orgID := printf "%s#organization" $base -}}
+{{- $webID := printf "%s#website" $base -}}
+{{- $pageID := printf "%s#webpage" $page.Permalink -}}
+
+{{- /* 服务地域 → [{"@type":"City|AdministrativeArea|Country","name":...}] */ -}}
+{{- $areas := slice -}}
+{{- range $seo.areaServed -}}
+  {{- $t := "AdministrativeArea" -}}
+  {{- $n := . -}}
+  {{- if strings.HasSuffix . "市" -}}
+    {{- $t = "City" -}}
+  {{- else if eq . "全国" -}}
+    {{- $t = "Country" -}}
+    {{- $n = "中国" -}}
+  {{- end -}}
+  {{- $areas = $areas | append (dict "@type" $t "name" $n) -}}
+{{- end -}}
+
+{{- /* ── Organization + LocalBusiness（本地实体，全站复用） ────────────── */ -}}
+{{- $org := dict
+  "@type" (slice "Organization" "LocalBusiness")
+  "@id" $orgID
+  "name" site.Title
+  "legalName" $company.legalName
+  "alternateName" (printf "%s（%s）" site.Params.shortName site.Params.brandEn)
+  "url" $base
+  "slogan" site.Params.slogan
+  "description" site.Params.description
+  "foundingDate" $company.foundingDate
+  "foundingLocation" (dict "@type" "Place" "name" "山东省聊城市")
+  "taxID" $company.taxID
+  "telephone" $contact.tel
+  "logo" (dict "@type" "ImageObject" "url" $logoURL "caption" site.Title)
+  "image" $ogURL
+  "address" (dict
+    "@type" "PostalAddress"
+    "addressCountry" "CN"
+    "addressRegion" "山东省"
+    "addressLocality" "聊城市"
+    "streetAddress" $company.address
+    "postalCode" $contact.postcode
+  )
+  "areaServed" $areas
+  "knowsAbout" $seo.businessScope
+  "award" $company.honors
+  "contactPoint" (slice (dict
+    "@type" "ContactPoint"
+    "contactType" "customer service"
+    "name" $contact.person
+    "telephone" $contact.tel
+    "areaServed" $areas
+    "availableLanguage" (slice "zh-CN")
+  ))
+  "knowsLanguage" (slice "zh-CN")
+-}}
+{{- with $seo.geo -}}
+  {{- $org = merge $org (dict "geo" (dict
+    "@type" "GeoCoordinates"
+    "latitude" .latitude
+    "longitude" .longitude
+    "name" .placename
+  )) -}}
+{{- end -}}
+
+{{- $website := dict
+  "@type" "WebSite"
+  "@id" $webID
+  "url" $base
+  "name" site.Title
+  "alternateName" site.Params.shortName
+  "description" site.Params.description
+  "inLanguage" "zh-CN"
+  "publisher" (dict "@id" $orgID)
+  "copyrightHolder" (dict "@id" $orgID)
+-}}
+
+{{- /* ── 面包屑（非首页，先算好再挂到 WebPage 上） ─────────────────────── */ -}}
+{{- $crumbID := "" -}}
+{{- $crumbs := slice -}}
+{{- if not $page.IsHome -}}
+  {{- $crumbID = printf "%s#breadcrumb" $page.Permalink -}}
+  {{- $crumbs = slice (dict "@type" "ListItem" "position" 1 "name" site.Params.shortName "item" $base) -}}
+  {{- $pos := 2 -}}
+  {{- range $page.Ancestors.Reverse -}}
+    {{- if ne .Kind "home" -}}
+      {{- $crumbs = $crumbs | append (dict "@type" "ListItem" "position" $pos "name" .Title "item" .Permalink) -}}
+      {{- $pos = add $pos 1 -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $crumbs = $crumbs | append (dict "@type" "ListItem" "position" $pos "name" $page.Title "item" $page.Permalink) -}}
+{{- end -}}
+
+{{- /* ── 当前页面节点：栏目页用 CollectionPage ─────────────────────────── */ -}}
+{{- $isSection := eq $page.Kind "section" -}}
+{{- $pageType := "WebPage" -}}
+{{- if $isSection -}}{{- $pageType = "CollectionPage" -}}{{- end -}}
+{{- $webpage := dict
+  "@type" $pageType
+  "@id" $pageID
+  "url" $page.Permalink
+  "name" $title
+  "description" $desc
+  "inLanguage" "zh-CN"
+  "isPartOf" (dict "@id" $webID)
+  "about" (dict "@id" $orgID)
+  "publisher" (dict "@id" $orgID)
+-}}
+{{- with $ogURL -}}
+  {{- $webpage = merge $webpage (dict "primaryImageOfPage" (dict "@type" "ImageObject" "url" .)) -}}
+{{- end -}}
+{{- if $crumbID -}}
+  {{- $webpage = merge $webpage (dict "breadcrumb" (dict "@id" $crumbID)) -}}
+{{- end -}}
+{{- if and $page.Params.date (not $page.Date.IsZero) -}}
+  {{- $webpage = merge $webpage (dict
+    "datePublished" ($page.Date.Format "2006-01-02T15:04:05Z07:00")
+    "dateModified" ($page.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+  ) -}}
+{{- end -}}
+
+{{- $graph := slice $org $website $webpage -}}
+{{- if $crumbID -}}
+  {{- $graph = $graph | append (dict "@type" "BreadcrumbList" "@id" $crumbID "itemListElement" $crumbs) -}}
+{{- end -}}
+
+{{- /* ── 栏目页：子页面 ItemList（帮助理解站点层级） ───────────────────── */ -}}
+{{- if and $isSection $page.RegularPages -}}
+  {{- $items := slice -}}
+  {{- range $i, $p := $page.RegularPages -}}
+    {{- $items = $items | append (dict "@type" "ListItem" "position" (add $i 1) "name" $p.Title "url" $p.Permalink) -}}
+  {{- end -}}
+  {{- $graph = $graph | append (dict
+    "@type" "ItemList"
+    "@id" (printf "%s#itemlist" $page.Permalink)
+    "name" (printf "%s列表" $page.Title)
+    "numberOfItems" (len $page.RegularPages)
+    "itemListElement" $items
+  ) -}}
+{{- end -}}
+
+{{- /* ── 服务详情页 → Service ─────────────────────────────────────────── */ -}}
+{{- if and (eq $page.Kind "page") (eq $page.Section "services") -}}
+  {{- $svc := dict
+    "@type" "Service"
+    "@id" (printf "%s#service" $page.Permalink)
+    "name" $page.Title
+    "description" $desc
+    "serviceType" $page.Title
+    "category" "信息化 / 数字化 / 智能化技术服务"
+    "provider" (dict "@id" $orgID)
+    "areaServed" $areas
+    "audience" (dict "@type" "BusinessAudience" "name" "制造业与成长型企业")
+    "mainEntityOfPage" (dict "@id" $pageID)
+    "inLanguage" "zh-CN"
+  -}}
+  {{- with $page.Params.features -}}
+    {{- $offers := slice -}}
+    {{- range $i, $f := . -}}
+      {{- $offers = $offers | append (dict
+        "@type" "Offer"
+        "position" (add $i 1)
+        "itemOffered" (dict "@type" "Service" "name" $f.title "description" ($f.desc | default "") )
+      ) -}}
+    {{- end -}}
+    {{- $svc = merge $svc (dict "hasOfferCatalog" (dict
+      "@type" "OfferCatalog"
+      "name" (printf "%s服务内容" $page.Title)
+      "itemListElement" $offers
+    )) -}}
+  {{- end -}}
+  {{- $graph = $graph | append $svc -}}
+{{- end -}}
+
+{{- /* ── 产品详情页 → SoftwareApplication ─────────────────────────────── */ -}}
+{{- if and (eq $page.Kind "page") (eq $page.Section "products") -}}
+  {{- $app := dict
+    "@type" "SoftwareApplication"
+    "@id" (printf "%s#software" $page.Permalink)
+    "name" $page.Title
+    "description" $desc
+    "applicationCategory" "BusinessApplication"
+    "operatingSystem" "Web（支持私有化部署）"
+    "provider" (dict "@id" $orgID)
+    "areaServed" $areas
+    "mainEntityOfPage" (dict "@id" $pageID)
+    "inLanguage" "zh-CN"
+  -}}
+  {{- with $page.Params.subtitle }}{{ $app = merge $app (dict "applicationSubCategory" .) }}{{ end -}}
+  {{- with $page.Params.features -}}
+    {{- $fl := slice -}}
+    {{- range . -}}{{- $fl = $fl | append .title -}}{{- end -}}
+    {{- $app = merge $app (dict "featureList" $fl) -}}
+  {{- end -}}
+  {{- with $page.Params.shot -}}
+    {{- with resources.Get . -}}
+      {{- $app = merge $app (dict "screenshot" .Permalink) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $graph = $graph | append $app -}}
+{{- end -}}
+
+{{- /* ── 资讯详情页 → BlogPosting ─────────────────────────────────────── */ -}}
+{{- if and (eq $page.Kind "page") (eq $page.Section "blog") -}}
+  {{- $article := dict
+    "@type" "BlogPosting"
+    "@id" (printf "%s#article" $page.Permalink)
+    "headline" $page.Title
+    "description" $desc
+    "inLanguage" "zh-CN"
+    "author" (dict
+      "@type" "Organization"
+      "name" ($page.Params.author | default site.Params.shortName)
+      "url" $base
+    )
+    "publisher" (dict "@id" $orgID)
+    "mainEntityOfPage" (dict "@id" $pageID)
+    "datePublished" ($page.Date.Format "2006-01-02T15:04:05Z07:00")
+    "dateModified" ($page.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+  -}}
+  {{- with $ogURL }}{{ $article = merge $article (dict "image" (slice .)) }}{{ end -}}
+  {{- with $page.Params.tags -}}
+    {{- $article = merge $article (dict "keywords" (delimit . "，") "articleSection" (index . 0)) -}}
+  {{- end -}}
+  {{- $graph = $graph | append $article -}}
+{{- end -}}
+
+{{- /* ── 案例详情页 → CreativeWork + VideoObject ──────────────────────── */ -}}
+{{- if and (eq $page.Kind "page") (eq $page.Section "custom-cases") -}}
+  {{- $case := dict
+    "@type" "CreativeWork"
+    "@id" (printf "%s#case" $page.Permalink)
+    "name" $page.Title
+    "description" $desc
+    "creator" (dict "@id" $orgID)
+    "about" (dict "@type" "Thing" "name" ($page.Params.subtitle | default $page.Title))
+    "mainEntityOfPage" (dict "@id" $pageID)
+    "inLanguage" "zh-CN"
+  -}}
+  {{- with $page.Params.poster -}}
+    {{- with resources.Get . -}}
+      {{- $case = merge $case (dict "image" .Permalink) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $graph = $graph | append $case -}}
+
+  {{- if and $page.Params.video $page.Params.poster -}}
+    {{- with resources.Get $page.Params.poster -}}
+      {{- $video := dict
+        "@type" "VideoObject"
+        "@id" (printf "%s#video" $page.Permalink)
+        "name" (printf "%s 系统演示视频" $page.Title)
+        "description" ($page.Params.video_note | default $desc)
+        "thumbnailUrl" (slice .Permalink)
+        "contentUrl" ($page.Params.video | absURL)
+        "publisher" (dict "@id" $orgID)
+        "inLanguage" "zh-CN"
+      -}}
+      {{- with $page.Params.uploadDate -}}
+        {{- $video = merge $video (dict "uploadDate" .) -}}
+      {{- end -}}
+      {{- $graph = $graph | append $video -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* safeJS：阻止 html/template 把 JSON 当 JS 字符串字面量再次转义 */ -}}
+<script type="application/ld+json">{{ (dict "@context" "https://schema.org" "@graph" $graph) | jsonify | safeJS }}</script>

@@ -1,0 +1,14 @@
+{{- /* Markdown 图片渲染钩子：
+       1. 目标在 assets/ 内（如 images/blog/xxx/01.jpg）→ 走 utilities/image partial，
+          生成响应式 webp srcset；
+       2. 否则（外链/static）→ 原样输出，附 lazy loading。
+       覆盖主题无 _markup 钩子的现状，只影响 Markdown 正文里的 ![]() 图片。 */ -}}
+
+{{ $src := strings.TrimPrefix "/" .Destination }}
+{{ $res := resources.Get $src }}
+
+{{ if $res }}
+  {{ partial "utilities/image.html" (dict "src" $src "class" "rounded-xl" "alt" .PlainText) }}
+{{ else }}
+  <img src="{{ .Destination | safeURL }}" alt="{{ .PlainText }}" loading="lazy" decoding="async" class="rounded-xl" />
+{{ end }}

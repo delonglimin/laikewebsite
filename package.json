@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "dev": "hugo server --noBuildLock --bind 127.0.0.1 --port 1313",
+    "build": "hugo --gc --noBuildLock",
+    "build:prod": "hugo --gc --minify --noBuildLock"
+  },
   "devDependencies": {
     "tailwindcss": "^4.0.0",
     "@tailwindcss/cli": "^4.0.0",

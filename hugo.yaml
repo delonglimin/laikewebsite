@@ -1,5 +1,10 @@
-theme: "github.com/writeonlycode/hugo-agency-web"
-languageCode: "en-us"
+# ============================================================
+# 主题与构建配置（Hugo 会与 config/_default/ 合并）
+#   站点信息 / SEO / 语言 / 分类法 统一放在 config/_default/hugo.yaml
+#   本文件只保留主题挂载与 Tailwind 构建相关配置
+# ============================================================
+
+theme: "hugo-agency-web"
 
 build:
   buildStats:
@@ -10,23 +15,16 @@ build:
       target: "css"
 
     - source: "(postcss|tailwind)\\.config\\.js"
-      target: 'css'
+      target: "css"
 
 module:
   hugo_version:
     min: "0.147.8"
 
-  imports:
-    - path: github.com/writeonlycode/hugo-agency-web
-
   mounts:
-    - source: 'hugo_stats.json'
-      target: 'assets/notwatching/hugo_stats.json'
+    - source: "hugo_stats.json"
+      target: "assets/notwatching/hugo_stats.json"
       disableWatch: true
 
-    - source: 'assets'
-      target: 'assets'
-
-taxonomies:
-  series: "series"
-  tags: "tags"
+    - source: "assets"
+      target: "assets"

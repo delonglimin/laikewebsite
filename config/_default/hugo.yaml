@@ -1,8 +1,67 @@
+# ============================================================
+# 站点通用配置（所有环境生效）
+#
+# baseURL 说明：
+#   本地预览（hugo server，development 环境）→ 保持 "/"，方便任意端口调试
+#   正式构建（hugo，production 环境）→ 由 config/production/hugo.yaml 覆盖为
+#                                      https://liaoruan.dpdns.org/
+# ============================================================
 baseURL: "/"
-title: "Agency Web"
-summaryLength: 20
 
-# services:
-#   googleAnalytics:
-#     id: G-MEASUREMENT_ID
+# 站点名（= 公司全称，用于 <title>、页脚、logo 的 alt）
+title: "聊城莱柯智能机器人有限公司"
 
+# ── 语言 / 地域 ──────────────────────────────────────────────
+languageCode: "zh-cn"
+defaultContentLanguage: "zh-cn"
+# 开启 CJK 分词：中文摘要、字数统计才准确
+hasCJKLanguage: true
+timeZone: "Asia/Shanghai"
+
+# ── SEO 基建 ────────────────────────────────────────────────
+# 生成 robots.txt（模板见 layouts/robots.txt）
+enableRobotsTXT: true
+enableEmoji: true
+
+# ── llms.txt（面向 AI 大模型 / AI 检索的站点内容索引）──────────
+# 在首页额外输出 /llms.txt（纯文本 Markdown，模板见 layouts/llms.txt）
+outputFormats:
+  llms:
+    mediaType: "text/plain"
+    baseName: "llms"
+    isPlainText: true
+    notAlternative: true
+
+outputs:
+  home: ["HTML", "RSS", "llms"]
+# 中文摘要长度按「字」计
+summaryLength: 60
+
+pagination:
+  pagerSize: 9
+
+# 资讯栏目用「标签」做筛选：
+#   tags 需要 term 页面（/tags/标签名/）承载「点标签看该标签文章」的降级路径，
+#   但 /tags/ 这个聚合列表页本身没有内容价值，继续禁用。
+#   只保留 tag 一种分类法，忽略文章里的 categories，避免生成多余页面。
+taxonomies:
+  tag: "tags"
+
+# 标签保持作者原始写法（否则 Hugo 会把 markdown 显示成 Markdown）
+capitalizeListTitles: false
+
+disableKinds: ["taxonomy"]
+
+sitemap:
+  changefreq: weekly
+  priority: 0.5
+  filename: "sitemap.xml"
+
+# 允许在 Markdown 正文中直接嵌 HTML（排版富文本时更灵活）
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  tableOfContents:
+    startLevel: 2
+    endLevel: 4

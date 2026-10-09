@@ -1,0 +1,9 @@
+{{- /* llms.txt 单行条目：- [标题](绝对地址): 一句话描述 */ -}}
+{{- $d := "" -}}
+{{- with .Description -}}
+  {{- $d = . -}}
+{{- else -}}
+  {{- $d = .Summary -}}
+{{- end -}}
+{{- $d = $d | plainify | replaceRE `\s+` " " | strings.TrimSpace | truncate 140 -}}
+{{- printf "- [%s](%s)%s" .Title .Permalink (cond (eq $d "") "" (printf ": %s" $d)) -}}

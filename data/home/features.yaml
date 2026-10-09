@@ -1,30 +1,56 @@
 enable: true
 
-title: "Lorem Ipsum is simply dummy text of the printing. "
-text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's"
+title: "发展历程"
+text: "从公司成立到省级平台，每一步都是行业对莱柯的认可"
 
 items:
-  - icon: "fas fa-user"
-    color: "#08D3BB"
-    pretitle: "Lorem Ipsum is simply dummy text"
-    pretext: "Lorem Ipsum is simply dummy text"
-    title: "**Lorem Ipsum** is simply dummy text of the printing. "
-    text: "KODEX TECHNOLOGY (PVT) LTD is a team of experienced mobile and web applications and website builders measuring dozens of completed projects. We build and develop mobile applications for several top platforms, including Android  & IOS. "
-    image: "images/home/features/features-1.png"
+  - date: "2019/8"
+    text: "聊城莱柯智能机器人有限公司成立"
 
-  - icon: "fas fa-user"
-    color: "#1090CB"
-    pretitle: "Lorem Ipsum is simply dummy text"
-    pretext: "Lorem Ipsum is simply dummy text"
-    title: "**Lorem Ipsum** is simply dummy text of the printing. "
-    text: "KODEX TECHNOLOGY (PVT) LTD is a team of experienced mobile and web applications and website builders measuring dozens of completed projects. We build and develop mobile applications for several top platforms, including Android  & IOS. "
-    image: "images/home/features/features-2.png"
+  - date: "2020/12"
+    text: "山东省大数据产业创新中心"
 
-  - icon: "fas fa-user"
-    color: "#9208D3"
-    pretitle: "Lorem Ipsum is simply dummy text"
-    pretext: "Lorem Ipsum is simply dummy text"
-    title: "**Lorem Ipsum** is simply dummy text of the printing. "
-    text: "KODEX TECHNOLOGY (PVT) LTD is a team of experienced mobile and web applications and website builders measuring dozens of completed projects. We build and develop mobile applications for several top platforms, including Android  & IOS. "
-    image: "images/home/features/features-3.png"
+  - date: "2021/2"
+    text: "聊城市首批智能化技术改造工程服务商"
 
+  - date: "2022/3"
+    text: "聊城市2021年度重点实验室"
+
+  - date: "2022/7"
+    text: "山东省省级工业互联网平台"
+
+  - date: "2022/8"
+    text: "山东省优秀数字产品（方案）"
+
+  - date: "2022/12"
+    text: "山东省「三优两重」项目"
+
+  - date: "2022/12"
+    text: "聊城市人才飞地"
+
+  - date: "2023/1"
+    text: "2022年度新型研发机构"
+
+  - date: "2023/1"
+    text: "国家级高新技术企业"
+
+  - date: "2023/4"
+    text: "山东省专精特新中小企业"
+
+  - date: "2023/11"
+    text: "山东省软件工程技术中心"
+
+  - date: "2023/12"
+    text: "山东省2023年新型研发机构"
+
+  - date: "2024/5"
+    text: "山东省首批数字经济产业创新中心"
+
+  - date: "2024/12"
+    text: "山东省瞪羚企业"
+
+  - date: "2025/1"
+    text: "山东省首批优秀工业领域大模型服务平台"
+
+  - date: "2025/3"
+    text: "聊城市新一代信息技术产研院"

@@ -1,0 +1,66 @@
+{{- /* ============================================================
+   llms.txt —— 面向 AI 大模型 / AI 检索代理的站点内容索引
+   输出：/llms.txt（由 config/_default/hugo.yaml 的 outputs.home 触发）
+   规范：https://llmstxt.org —— 一段 H1 + 引用式简介（> 开头）+ 分节链接列表
+   ============================================================ */ -}}
+{{- $co := site.Params.company -}}
+{{- $ct := site.Params.contact -}}
+{{- $seo := site.Params.seo -}}
+{{- $svc := site.GetPage "/services" -}}
+{{- $prod := site.GetPage "/products" -}}
+{{- $cases := site.GetPage "/custom-cases" -}}
+{{- $blog := site.GetPage "/blog" -}}
+{{- $about := site.GetPage "/about" -}}
+{{- $annotation := site.GetPage "/data-annotation" -}}
+# {{ site.Title }}
+
+> {{ site.Params.description }}
+
+{{ site.Title }}（品牌名：{{ site.Params.shortName }} / {{ site.Params.brandEn }}，简称「莱柯」）成立于 {{ $co.foundingDate }}，注册地及办公地位于山东省聊城市东昌府区，是国家级高新技术企业、山东省专精特新中小企业、山东省瞪羚企业、聊城市新一代信息技术产业链链主企业。公司定位为「{{ site.Params.tagline }}」，为制造业企业与成长型企业提供从咨询规划、软件开发、系统集成到平台运营的一站式信息化、数字化、智能化建设服务。本站为中文（简体）官网，内容可被 AI 检索与引用。
+
+## 公司档案
+
+- 公司全称：{{ $co.legalName }}
+- 品牌名称：{{ $co.brand }}
+- 成立日期：{{ $co.foundingDate }}
+- 统一社会信用代码：{{ $co.taxID }}
+- 法定代表人：{{ $co.legalRepresentative }}
+- 注册资本：{{ $co.registeredCapital }}
+- 注册地：{{ $seo.geo.placename }}
+- 办公地址：{{ $co.address }}
+- 联系电话：{{ $ct.person }} {{ $ct.phone }}
+- 主营业务：{{ delimit $seo.businessScope "、" }}
+- 服务区域：{{ delimit $seo.areaServed "、" }}
+- 资质荣誉：{{ delimit $co.honors "、" }}
+- 企业 Slogan：{{ site.Params.slogan }}
+
+## 核心业务（服务）
+
+{{ range $svc.Pages -}}
+{{ partial "seo/llms-line.html" . }}
+{{ end }}
+## 产品与平台
+
+{{ range $prod.Pages -}}
+{{ partial "seo/llms-line.html" . }}
+{{ end }}
+## 定制案例
+
+{{ range $cases.Pages -}}
+{{ partial "seo/llms-line.html" . }}
+{{ end }}
+## 最新资讯
+
+{{ range $blog.RegularPages.ByDate.Reverse -}}
+{{ partial "seo/llms-line.html" . }}
+{{ end }}
+## 公司信息
+
+- [{{ $about.Title }}]({{ $about.Permalink }}): 公司简介、发展历程、资质荣誉、产学研合作与联系方式
+- [联系我们]({{ printf "%s#contact" $about.Permalink }}): 咨询与项目合作入口，联系电话 {{ $ct.phone }}
+{{ with $annotation }}- [{{ .Title }}]({{ .Permalink }}): {{ .Description }}{{ end }}
+
+## Optional
+
+- [网站地图]({{ "sitemap.xml" | absURL }}): 全站页面索引（XML Sitemap）
+- [RSS 订阅]({{ "index.xml" | absURL }}): 资讯栏目更新订阅

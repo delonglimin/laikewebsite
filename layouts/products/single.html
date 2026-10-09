@@ -1,0 +1,171 @@
+{{- /* ==========================================================================
+  产品详情页模板（layouts/products/single.html）
+  仅作用于 content/products/<slug>/ 下的页面。
+
+  页面结构全部由 front matter 驱动，字段约定：
+    title       产品名称（必填，H1）
+    subtitle    英文/品类副标题（如 IoT Platform）
+    description 一句话概述（用于页头副文 + SEO description）
+    summary     列表卡片摘要（可选，缺省用 description）
+    icon        产品主图标（FontAwesome 类名，如 fa-solid fa-microchip）
+    cover       配图 ①：产品概述右侧主图（留空 = 虚线占位框）
+    shot        配图 ②：界面预览通栏大图（留空 = 虚线占位框）
+    features[]  核心功能：- title / desc / icon
+    scenarios[] 适用场景（字符串数组）
+    正文         「产品概述」区域的 markdown 内容
+   ========================================================================== */ -}}
+
+{{ define "main" }}
+  <section class="pt-10 pb-16 xl:pt-14 xl:pb-24">
+    <div class="container mx-auto px-4">
+      {{- /* ── 面包屑 ────────────────────────────────────────────── */ -}}
+      <nav class="mb-10 text-sm text-[#8A919E]" aria-label="面包屑">
+        <ol class="flex flex-wrap items-center gap-2">
+          <li><a class="transition-colors hover:text-[#0152D9]" href="{{ site.Home.RelPermalink }}">首页</a></li>
+          {{ range .Ancestors.Reverse }}
+            {{ if ne .Kind "home" }}
+              <li aria-hidden="true">/</li>
+              <li>
+                <a class="transition-colors hover:text-[#0152D9]" href="{{ .RelPermalink }}">{{ .Title }}</a>
+              </li>
+            {{ end }}
+          {{ end }}
+          <li aria-hidden="true">/</li>
+          <li class="text-[#374151]" aria-current="page">{{ .Title }}</li>
+        </ol>
+      </nav>
+
+      {{- /* ── 页头 ──────────────────────────────────────────────── */ -}}
+      <header class="mx-auto mb-20 max-w-4xl text-center">
+        {{ with .Params.subtitle }}
+          <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">{{ . }}</p>
+        {{ end }}
+        <h1 class="text-4xl font-bold text-gray-900 xl:text-5xl">{{ .Title }}</h1>
+        {{ with .Description }}
+          <p class="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-[#5A6270]">{{ . }}</p>
+        {{ end }}
+        <div class="mt-9 flex flex-wrap items-center justify-center gap-4">
+          {{ partial "components/button/primary" (dict "label" "产品咨询" "href" "/about/#contact") }}
+          {{ partial "components/button/outline" (dict "label" "查看全部产品" "href" "/products/") }}
+        </div>
+      </header>
+
+      {{- /* ── 产品概述（左文右图，图位可预留） ──────────────────── */ -}}
+      <section class="mb-20 grid items-center gap-10 lg:grid-cols-2">
+        <div>
+          <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">Overview</p>
+          <h2 class="mb-6 text-2xl font-bold text-gray-900 xl:text-3xl">产品概述</h2>
+          <div class="prose max-w-none text-[#5A6270]">{{ .Content }}</div>
+        </div>
+        <div>
+          {{ partial "shared/image-slot.html" (dict
+            "src" .Params.cover
+            "alt" (printf "%s产品界面 - %s" .Title site.Params.shortName)
+            "ratio" "aspect-[16/9]"
+            "fit" "contain"
+            "hint" "front matter 字段：cover"
+            )
+          }}
+        </div>
+      </section>
+
+      {{- /* ── 核心功能 ──────────────────────────────────────────── */ -}}
+      {{ with .Params.features }}
+        <section class="mb-20">
+          <div class="mx-auto mb-12 max-w-3xl text-center">
+            <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">Core Modules</p>
+            <h2 class="text-2xl font-bold text-gray-900 xl:text-3xl">核心功能</h2>
+          </div>
+          <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {{ range . }}
+              <div
+                class="rounded-2xl border border-gray-100 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-lg"
+              >
+                <span class="bg-primary/10 text-primary mb-5 flex size-12 items-center justify-center rounded-xl">
+                  <i class="{{ .icon | default "fa-solid fa-circle-check" }} text-xl" aria-hidden="true"></i>
+                </span>
+                <h3 class="mb-3 text-base font-bold text-gray-900">{{ .title }}</h3>
+                <p class="text-sm leading-relaxed text-[#5A6270]">{{ .desc }}</p>
+              </div>
+            {{ end }}
+          </div>
+        </section>
+      {{ end }}
+
+      {{- /* ── 界面预览（通栏配图位） ────────────────────────────── */ -}}
+      <section class="mb-20">
+        <div class="mx-auto mb-10 max-w-3xl text-center">
+          <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">Preview</p>
+          <h2 class="text-2xl font-bold text-gray-900 xl:text-3xl">界面预览</h2>
+        </div>
+        {{ partial "shared/image-slot.html" (dict
+          "src" .Params.shot
+          "alt" (printf "%s界面预览 - %s" .Title site.Params.shortName)
+          "ratio" "aspect-[16/9]"
+          "fit" "contain"
+          "hint" "front matter 字段：shot（建议 1920×1080 及以上）"
+          )
+        }}
+      </section>
+
+      {{- /* ── 适用场景 ──────────────────────────────────────────── */ -}}
+      {{ with .Params.scenarios }}
+        <section class="mb-20">
+          <div class="mx-auto mb-12 max-w-3xl text-center">
+            <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">Scenarios</p>
+            <h2 class="text-2xl font-bold text-gray-900 xl:text-3xl">适用场景</h2>
+          </div>
+          <ul class="mx-auto grid max-w-4xl gap-x-10 gap-y-4 sm:grid-cols-2">
+            {{ range . }}
+              <li class="flex gap-3 text-base leading-relaxed text-[#5A6270]">
+                <i class="fa-solid fa-circle-check text-primary mt-1 shrink-0" aria-hidden="true"></i>
+                <span>{{ . }}</span>
+              </li>
+            {{ end }}
+          </ul>
+        </section>
+      {{ end }}
+
+      {{- /* ── 其他产品 ──────────────────────────────────────────── */ -}}
+      {{ $others := where (where site.RegularPages "Section" "products") "Permalink" "ne" .Permalink }}
+      {{ with $others }}
+        <section class="mb-20">
+          <h2 class="mb-8 text-2xl font-bold text-gray-900">其他产品</h2>
+          <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {{ range . }}
+              <a
+                class="group hover:border-primary/30 flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                href="{{ .RelPermalink }}"
+              >
+                <span class="bg-primary/10 text-primary flex size-12 shrink-0 items-center justify-center rounded-xl">
+                  <i class="{{ .Params.icon | default "fa-solid fa-cube" }} text-xl" aria-hidden="true"></i>
+                </span>
+                <span class="min-w-0">
+                  <span class="group-hover:text-primary block text-base font-semibold text-gray-900 transition-colors">{{ .Title }}</span>
+                  <span class="mt-1 block truncate text-sm text-[#8A919E]">{{ .Params.subtitle }}</span>
+                </span>
+              </a>
+            {{ end }}
+          </div>
+        </section>
+      {{ end }}
+
+      {{- /* ── 咨询 CTA ──────────────────────────────────────────── */ -}}
+      <section
+        class="rounded-3xl bg-gradient-to-br from-[#0152D9] to-[#013A94] px-8 py-14 text-center shadow-xl shadow-primary/20"
+      >
+        <h2 class="text-2xl font-bold text-white xl:text-3xl">需要为您的企业部署{{ .Title }}？</h2>
+        <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-blue-100">
+          我们提供从需求调研、方案设计到部署实施与持续运维的全流程服务，支持私有化部署与个性化定制。
+        </p>
+        <a
+          class="mt-9 inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 font-medium text-[#0152D9] transition-colors duration-500 hover:bg-blue-50"
+          href="/about/#contact"
+        >
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          联系我们
+        </a>
+      </section>
+    </div>
+  </section>
+{{ end }}

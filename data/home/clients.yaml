@@ -1,17 +1,25 @@
 enable: true
 
-title: "You will be in good company"
+title: "合作伙伴"
 
+# logo 来源：各机构官网/官方渠道
+#   中国移动=官方图形标重排；东昌学院=官网横版白字标(lcudcc.edu.cn/images/web3.png)；
+#   北京清微智能=官方SVG(rs.tsingmicro.com logo.CvhlYUgm.svg，白字版式)
+# dark: true → 官方 logo 为纯白设计，卡片改用深色底承载
 items:
-  - name: "Beneoshop"
-    image: "images/home/clients/beneoshop.png"
+  - name: "中国移动"
+    image: "/images/home/clients/china-mobile.png"
 
-  - name: "Caspio"
-    image: "images/home/clients/caspio.png"
+  - name: "财信集团"
+    image: "/images/home/clients/caixin.png"
 
-  - name: "Hypergrid"
-    image: "images/home/clients/hypergrid.png"
+  - name: "东昌学院"
+    image: "/images/home/clients/dongchang.png"
+    dark: true
 
-  - name: "Leo Trippi"
-    image: "images/home/clients/leo-trippi.png"
+  - name: "山东省计算中心"
+    image: "/images/home/clients/scsc.png"
 
+  - name: "北京清微智能"
+    image: "/images/home/clients/tsingmicro.svg"
+    dark: true

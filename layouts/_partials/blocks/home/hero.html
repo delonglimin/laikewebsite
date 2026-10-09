@@ -1,0 +1,92 @@
+{{- /* 覆盖主题 hero：
+   右侧原为静态配图（data/home/hero.yaml 的 image），改为「数据中枢」3D 交互动画
+   —— 纯 Canvas 2D + 手写三维投影（assets/js/hero-3d.js），无第三方依赖。
+   静态图片保留为 <noscript> 兜底；prefers-reduced-motion 时脚本只渲染一帧静态画面。
+   其余结构（装饰色块 / 标题 / 按钮 / 底部能力四宫格）与主题一致。 */ -}}
+<section id="hero" class="hero relative py-8 xl:py-16 overflow-hidden">
+  <div class="text-primary absolute right-0 translate-x-[90%] top-1/2 -translate-y-1/2 -z-10">
+    {{ partial "utilities/svg" (dict "src" "images/hero/bg-blob-1.svg")}}
+  </div>
+  <div class="text-[#08D3BB] absolute left-0 -translate-x-[90%] bottom-0 -z-10">
+    {{ partial "utilities/svg" (dict "src" "images/hero/bg-blob-2.svg")}}
+  </div>
+  <div class="container mx-auto px-4">
+    <div class="grid xl:grid-cols-2 gap-8 mb-24">
+      <div class="flex flex-col justify-center gap-4">
+        {{ with .title }}
+          <h1 class="markdown-title text-center xl:text-start text-4xl xl:text-5xl font-semibold xl:leading-normal">{{ . | markdownify }}</h1>
+        {{ end }}
+        {{ with .text }}
+        <p class="xl:leading-loose text-center xl:text-start text-[#5C5C5C]">{{ . }}</p>
+        {{ end }}
+        {{ if .buttons }}
+          <div class="flex items-center flex-col xl:flex-row gap-4 mt-8">
+            {{ range $i, $e := .buttons }}
+              {{ if (eq $i 0) }}
+                {{ partial "components/button/primary" (dict "label" .label "href" .link)}}
+              {{ else }}
+                {{ partial "components/button/outline" (dict "label" .label "href" .link)}}
+              {{ end }}
+            {{ end }}
+          </div>
+        {{ end }}
+      </div>
+
+      {{- /* ── 右侧：三维数据中枢动画（无底色，直接浮于页面背景之上） ── */ -}}
+      <div class="flex flex-col items-center justify-center">
+        <div class="relative aspect-square w-full max-w-[560px]">
+          <canvas
+            id="lk-hero-3d"
+            class="relative block h-full w-full touch-pan-y select-none"
+            role="img"
+            aria-label="莱柯工业互联网数据中枢三维可视化动画：数据节点、连线数据流与环形扫描的动态演示"
+          ></canvas>
+
+          {{- /* HUD 四角框 */ -}}
+          <span class="border-primary/20 pointer-events-none absolute top-3 left-3 size-5 rounded-tl-lg border-t-2 border-l-2"></span>
+          <span class="border-primary/20 pointer-events-none absolute top-3 right-3 size-5 rounded-tr-lg border-t-2 border-r-2"></span>
+          <span class="border-primary/20 pointer-events-none absolute bottom-3 left-3 size-5 rounded-bl-lg border-b-2 border-l-2"></span>
+          <span class="border-primary/20 pointer-events-none absolute right-3 bottom-3 size-5 rounded-br-lg border-r-2 border-b-2"></span>
+
+          {{- /* HUD 角标文字 */ -}}
+          <span class="text-primary/50 pointer-events-none absolute top-4.5 left-10 text-[10px] font-semibold tracking-[0.24em] uppercase">Data Core</span>
+          <span class="text-primary/50 pointer-events-none absolute top-4.5 right-10 flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.24em] uppercase">
+            <span class="inline-block size-1.5 animate-pulse rounded-full bg-[#08D3BB]"></span>Live
+          </span>
+          <span
+            id="lk-hero-3d-hint"
+            class="text-primary/45 pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 text-[11px] tracking-[0.2em] whitespace-nowrap transition-opacity duration-700"
+            >拖动旋转 · 点击脉冲</span
+          >
+
+          <noscript>
+            {{ with .image }}
+              {{ partial "utilities/image" (dict "src" . "class" "object-cover object-center")}}
+            {{ end }}
+          </noscript>
+        </div>
+      </div>
+    </div>
+    {{ if .items }}
+      <div class="flex flex-col xl:flex-row xl:items-center justify-around flex-wrap gap-8">
+        {{ range .items }}
+          <div class="flex items-center justify-start gap-4">
+            <div class="flex items-center justify-center text-2xl text-[{{ .color }}] bg-[{{ .color }}]/10 size-20 rounded-2xl">
+              <i class="{{ .icon }}"></i> <!-- Solid style -->
+            </div>
+            <div class="inline-flex flex-col">
+              <h2 class="text-xl font-medium">{{ .title }}</h2>
+              <p class="text-sm text-[#969696]">{{ .text }}</p>
+            </div>
+          </div>
+        {{ end }}
+      </div>
+    {{ end }}
+  </div>
+</section>
+
+{{- /* 仅在首页需要，随 hero 一起按需加载 */ -}}
+{{ with resources.Get "js/hero-3d.js" }}
+  {{ $js := . | js.Build (dict "minify" "true") | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" defer></script>
+{{ end }}

@@ -1,0 +1,59 @@
+{{- /* 覆盖主题 single.html（资讯文章页使用）
+     主题原版问题：
+       1. 不显示发布日期与来源，资讯页缺时间信息；
+       2. 不渲染文章封面图；
+       3. 标签链接用 site.BaseURL 拼接，正式域名下会产生 //tags/ 双斜杠。
+     作用域：没有 section 专属模板的普通页面（目前即 /blog/ 下的文章；
+     产品/服务页有各自的 layouts/<section>/single.html，不受影响）。 */ -}}
+
+{{ define "main" }}
+  <section class="py-16">
+    <div class="container mx-auto px-4">
+      <!-- 标题与元信息 -->
+      <div class="mx-auto mb-10 max-w-3xl xl:mb-12">
+        {{ with .Title }}
+          <h1 class="markdown-title text-center text-3xl font-bold leading-snug xl:text-4xl">{{ . }}</h1>
+        {{ end }}
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[#8A919E]">
+          {{ with .Date }}
+            <span class="inline-flex items-center gap-2">
+              <i class="fa-solid fa-calendar-days text-primary/60" aria-hidden="true"></i>{{ .Format "2006年01月02日" }}
+            </span>
+          {{ end }}
+          {{ with .Params.author }}
+            <span class="inline-flex items-center gap-2">
+              <i class="fa-solid fa-newspaper text-primary/60" aria-hidden="true"></i>来源：{{ . }}
+            </span>
+          {{ end }}
+        </div>
+      </div>
+
+      <!-- 封面图 -->
+      {{ with .Params.image }}
+        <div class="mx-auto mb-12 max-w-4xl overflow-hidden rounded-2xl">
+          {{ partial "utilities/image.html" (dict "src" . "class" "w-full" "alt" $.Title) }}
+        </div>
+      {{ end }}
+
+      <!-- 正文 -->
+      <div class="prose prose-lg mx-auto max-w-3xl">
+        {{ .Content }}
+      </div>
+
+      <!-- 标签 -->
+      {{ with .Params.tags }}
+        <div class="mt-14 flex flex-wrap items-center justify-center gap-3">
+          {{ range . }}
+            {{ $term := site.GetPage (printf "/tags/%s" .) }}
+            {{ if $term }}
+              <a class="rounded-full bg-[#EDF1F8] px-4 py-1.5 text-sm text-[#5A6270] transition-colors duration-300 hover:bg-primary/10 hover:text-primary"
+                 href="{{ $term.RelPermalink }}">
+                <i class="fa-solid fa-tag mr-1.5 text-xs" aria-hidden="true"></i>{{ . }}
+              </a>
+            {{ end }}
+          {{ end }}
+        </div>
+      {{ end }}
+    </div>
+  </section>
+{{ end }}

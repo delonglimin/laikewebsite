@@ -1,6 +1,8 @@
-enable: true
+# 订阅/邮件收集表单 —— 本站暂无后端，关闭以免渲染出无效表单
+# 后续若要启用，需填 method / action / placeholder / label 并接入表单服务
+enable: false
 
-title: "Lorem Ipsum is simply dummy text of the printing"
+title: ""
 method: ""
 action: ""
 placeholder: ""

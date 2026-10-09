@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" fill="none" role="img" aria-label="系统集成：多系统对接与数据共享">
+  <defs>
+    <linearGradient id="igBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F1F6FD"/>
+    </linearGradient>
+    <linearGradient id="igCore" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A66F2"/>
+      <stop offset="1" stop-color="#0145BC"/>
+    </linearGradient>
+    <radialGradient id="igGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(600 450) scale(340)">
+      <stop offset="0" stop-color="#DCE8FB" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#DCE8FB" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="igSh" x="-60%" y="-60%" width="220%" height="240%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0B2A5B" flood-opacity=".18"/>
+    </filter>
+    <filter id="igShSm" x="-60%" y="-60%" width="220%" height="240%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0B2A5B" flood-opacity=".08"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="900" fill="url(#igBg)"/>
+  <circle cx="600" cy="450" r="340" fill="url(#igGlow)"/>
+
+  <!-- 对接连接线 -->
+  <g stroke="#C8D6EC" stroke-width="2" stroke-linecap="round">
+    <line x1="600" y1="270" x2="600" y2="390"/>
+    <line x1="600" y1="510" x2="600" y2="626"/>
+    <line x1="390" y1="450" x2="540" y2="450"/>
+    <line x1="660" y1="450" x2="810" y2="450"/>
+  </g>
+  <g fill="#C8D6EC">
+    <circle cx="600" cy="270" r="4"/>
+    <circle cx="600" cy="626" r="4"/>
+    <circle cx="390" cy="450" r="4"/>
+    <circle cx="810" cy="450" r="4"/>
+  </g>
+
+  <!-- 外部系统卡 -->
+  <g filter="url(#igShSm)">
+    <rect x="520" y="174" width="160" height="96" rx="26" fill="#FFFFFF" stroke="#E3EAF6" stroke-width="2"/>
+    <rect x="520" y="630" width="160" height="96" rx="26" fill="#FFFFFF" stroke="#E3EAF6" stroke-width="2"/>
+    <rect x="230" y="402" width="160" height="96" rx="26" fill="#FFFFFF" stroke="#E3EAF6" stroke-width="2"/>
+    <rect x="810" y="402" width="160" height="96" rx="26" fill="#FFFFFF" stroke="#E3EAF6" stroke-width="2"/>
+  </g>
+
+  <!-- 数据层 -->
+  <g stroke="#0152D9" stroke-width="4" fill="none">
+    <ellipse cx="600" cy="206" rx="28" ry="11"/>
+    <path d="M572 206 V238"/>
+    <path d="M628 206 V238"/>
+    <path d="M572 238 A28 11 0 0 0 628 238"/>
+    <path d="M572 222 A28 11 0 0 0 628 222"/>
+  </g>
+
+  <!-- 云平台 -->
+  <path d="M860 466 a 15 15 0 0 1 3 -29 a 21 21 0 0 1 40 -6 a 16 16 0 0 1 12 35 z" stroke="#0152D9" stroke-width="4" stroke-linejoin="round" fill="none"/>
+
+  <!-- 报表 -->
+  <g stroke="#08D3BB" stroke-width="4" fill="none">
+    <rect x="282" y="428" width="56" height="44" rx="10"/>
+    <path d="M282 442 H338"/>
+    <path d="M310 428 V472"/>
+  </g>
+
+  <!-- 设备终端 -->
+  <g stroke="#0152D9" stroke-width="4" fill="none">
+    <rect x="576" y="652" width="48" height="44" rx="10"/>
+  </g>
+  <circle cx="590" cy="664" r="4" fill="#08D3BB"/>
+  <line x1="600" y1="664" x2="614" y2="664" stroke="#0152D9" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="586" y1="682" x2="614" y2="682" stroke="#0152D9" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- 中枢 -->
+  <g filter="url(#igSh)">
+    <rect x="536" y="386" width="128" height="128" rx="40" fill="url(#igCore)"/>
+  </g>
+  <g stroke="#FFFFFF" stroke-width="4" opacity=".85" stroke-linecap="round">
+    <path d="M600 422 L570 476"/>
+    <path d="M600 422 L630 476"/>
+    <path d="M570 476 H630"/>
+  </g>
+  <g fill="#FFFFFF">
+    <circle cx="600" cy="422" r="10"/>
+    <circle cx="570" cy="476" r="10"/>
+    <circle cx="630" cy="476" r="10"/>
+  </g>
+</svg>

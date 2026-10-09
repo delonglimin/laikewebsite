@@ -1,0 +1,27 @@
+{{- /* 覆盖主题 clients 区块：
+   合作伙伴以「官方 logo」展示：统一高度卡片 + 原色 logo，hover 轻浮起。
+   资源均为高清透明图（SVG 矢量 / 3-10 倍冗余位图），任意 DPR 清晰。
+   dark: true 的条目 → 官方 logo 为纯白设计（东昌学院横版校名标、清微智能官方 SVG），
+   卡片改用深蓝底承载；其余白卡。
+   数据源：data/home/clients.yaml（每项 name + image + 可选 dark）。 */ -}}
+<section id="clients" class="clients relative overflow-hidden pt-10 pb-24 xl:pt-16 xl:pb-28">
+  <div class="container mx-auto px-4">
+    {{- /* 用 h2：首页 H1 只能有一个（hero 标题），此处降级避免重复 H1 稀释语义 */ -}}
+    <h2 class="text-2xl font-medium leading-relaxed text-center xl:max-w-1/2 mx-auto mb-16">{{ .title }}</h2>
+    <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 xl:grid-cols-5">
+      {{ range .items }}
+        {{- if .dark }}
+        <div
+          class="flex h-24 items-center justify-center rounded-2xl border border-[#0A2A5E] bg-[#0A2A5E] px-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#2C4E8F] hover:shadow-lg hover:shadow-[#0A2A5E]/25"
+        >
+        {{- else }}
+        <div
+          class="flex h-24 items-center justify-center rounded-2xl border border-[#E9ECF2] bg-white px-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#D8E2F5] hover:shadow-lg hover:shadow-gray-900/5"
+        >
+        {{- end }}
+          {{ partial "utilities/image" (dict "src" .image "alt" .name "class" "h-11 w-auto max-w-full object-contain sm:h-12") }}
+        </div>
+      {{ end }}
+    </div>
+  </div>
+</section>

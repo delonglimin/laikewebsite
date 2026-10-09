@@ -1,0 +1,181 @@
+{{- /* ==========================================================================
+  服务详情页模板（layouts/services/single.html）
+  仅作用于 content/services/<slug>/ 下的页面。
+
+  页面结构全部由 front matter 驱动，字段约定：
+    title       服务名称（必填，H1）
+    subtitle    英文/品类副标题（如 AI Application Development）
+    description 一句话概述（用于页头副文 + SEO description）
+    summary     列表卡片摘要（可选，缺省用 description）
+    icon        服务主图标（FontAwesome 类名，如 fa-solid fa-brain）
+    cover       配图 ①：服务概述右侧主图（留空 = 虚线占位框）
+    image       列表卡片配图（通常与 cover 同值）
+    features[]  服务内容：- title / desc / icon
+    scenarios[] 适用场景（字符串数组）
+    正文         「服务概述」区域的 markdown 内容
+   ========================================================================== */ -}}
+
+{{ define "main" }}
+  {{- /* 服务流程：全站服务通用，不随页面变化
+       注意：变量必须声明在 define 块内——define 是独立模板作用域，
+       写在块外的主体会被忽略，块内引用会报 undefined variable */ -}}
+  {{- $steps := slice
+    (dict "no" "01" "title" "咨询诊断" "desc" "了解业务现状与痛点，梳理需求边界与目标")
+    (dict "no" "02" "title" "方案设计" "desc" "输出技术方案、实施计划与报价，明确交付物")
+    (dict "no" "03" "title" "交付实施" "desc" "按里程碑推进开发、集成、测试与上线")
+    (dict "no" "04" "title" "持续运维" "desc" "提供培训、运维保障与迭代优化")
+  -}}
+
+  <section class="pt-10 pb-16 xl:pt-14 xl:pb-24">
+    <div class="container mx-auto px-4">
+      {{- /* ── 面包屑 ────────────────────────────────────────────── */ -}}
+      <nav class="mb-10 text-sm text-[#8A919E]" aria-label="面包屑">
+        <ol class="flex flex-wrap items-center gap-2">
+          <li><a class="transition-colors hover:text-[#0152D9]" href="{{ site.Home.RelPermalink }}">首页</a></li>
+          {{ range .Ancestors.Reverse }}
+            {{ if ne .Kind "home" }}
+              <li aria-hidden="true">/</li>
+              <li>
+                <a class="transition-colors hover:text-[#0152D9]" href="{{ .RelPermalink }}">{{ .Title }}</a>
+              </li>
+            {{ end }}
+          {{ end }}
+          <li aria-hidden="true">/</li>
+          <li class="text-[#374151]" aria-current="page">{{ .Title }}</li>
+        </ol>
+      </nav>
+
+      {{- /* ── 页头 ──────────────────────────────────────────────── */ -}}
+      <header class="mx-auto mb-20 max-w-4xl text-center">
+        {{ with .Params.subtitle }}
+          <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">{{ . }}</p>
+        {{ end }}
+        <h1 class="text-4xl font-bold text-gray-900 xl:text-5xl">{{ .Title }}</h1>
+        {{ with .Description }}
+          <p class="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-[#5A6270]">{{ . }}</p>
+        {{ end }}
+        <div class="mt-9 flex flex-wrap items-center justify-center gap-4">
+          {{ partial "components/button/primary" (dict "label" "服务咨询" "href" "/about/#contact") }}
+          {{ partial "components/button/outline" (dict "label" "查看全部服务" "href" "/services/") }}
+        </div>
+      </header>
+
+      {{- /* ── 服务概述（左文右图） ──────────────────────────────── */ -}}
+      <section class="mb-20 grid items-center gap-10 lg:grid-cols-5">
+        <div class="lg:col-span-3">
+          <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">Overview</p>
+          <h2 class="mb-6 text-2xl font-bold text-gray-900 xl:text-3xl">服务概述</h2>
+          <div class="prose max-w-none text-[#5A6270]">{{ .Content }}</div>
+        </div>
+        <div class="lg:col-span-2">
+          {{ partial "shared/image-slot.html" (dict
+            "src" .Params.cover
+            "alt" (printf "%s 服务配图" .Title)
+            "ratio" "aspect-[4/3]"
+            "hint" "front matter 字段：cover"
+            )
+          }}
+        </div>
+      </section>
+
+      {{- /* ── 服务内容 ──────────────────────────────────────────── */ -}}
+      {{ with .Params.features }}
+        <section class="mb-20">
+          <div class="mx-auto mb-12 max-w-3xl text-center">
+            <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">What We Do</p>
+            <h2 class="text-2xl font-bold text-gray-900 xl:text-3xl">服务内容</h2>
+          </div>
+          <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {{ range . }}
+              <div
+                class="rounded-2xl border border-gray-100 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-lg"
+              >
+                <span class="bg-primary/10 text-primary mb-5 flex size-12 items-center justify-center rounded-xl">
+                  <i class="{{ .icon | default "fa-solid fa-circle-check" }} text-xl" aria-hidden="true"></i>
+                </span>
+                <h3 class="mb-3 text-base font-bold text-gray-900">{{ .title }}</h3>
+                <p class="text-sm leading-relaxed text-[#5A6270]">{{ .desc }}</p>
+              </div>
+            {{ end }}
+          </div>
+        </section>
+      {{ end }}
+
+      {{- /* ── 服务流程 ──────────────────────────────────────────── */ -}}
+      <section class="mb-20">
+        <div class="mx-auto mb-12 max-w-3xl text-center">
+          <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">Process</p>
+          <h2 class="text-2xl font-bold text-gray-900 xl:text-3xl">服务流程</h2>
+        </div>
+        <ol class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          {{ range $steps }}
+            <li class="relative rounded-2xl border border-gray-100 bg-white p-7 shadow-sm">
+              <span class="text-primary/15 absolute top-4 right-5 text-4xl font-bold leading-none">{{ .no }}</span>
+              <h3 class="mb-3 text-base font-bold text-gray-900">{{ .title }}</h3>
+              <p class="text-sm leading-relaxed text-[#5A6270]">{{ .desc }}</p>
+            </li>
+          {{ end }}
+        </ol>
+      </section>
+
+      {{- /* ── 适用场景 ──────────────────────────────────────────── */ -}}
+      {{ with .Params.scenarios }}
+        <section class="mb-20">
+          <div class="mx-auto mb-12 max-w-3xl text-center">
+            <p class="text-primary mb-4 text-sm font-semibold uppercase tracking-widest">Scenarios</p>
+            <h2 class="text-2xl font-bold text-gray-900 xl:text-3xl">适用场景</h2>
+          </div>
+          <ul class="mx-auto grid max-w-4xl gap-x-10 gap-y-4 sm:grid-cols-2">
+            {{ range . }}
+              <li class="flex gap-3 text-base leading-relaxed text-[#5A6270]">
+                <i class="fa-solid fa-circle-check text-primary mt-1 shrink-0" aria-hidden="true"></i>
+                <span>{{ . }}</span>
+              </li>
+            {{ end }}
+          </ul>
+        </section>
+      {{ end }}
+
+      {{- /* ── 其他服务 ──────────────────────────────────────────── */ -}}
+      {{ $others := where (where site.RegularPages "Section" "services") "Permalink" "ne" .Permalink }}
+      {{ with $others }}
+        <section class="mb-20">
+          <h2 class="mb-8 text-2xl font-bold text-gray-900">其他服务</h2>
+          <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {{ range . }}
+              <a
+                class="group hover:border-primary/30 flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                href="{{ .RelPermalink }}"
+              >
+                <span class="bg-primary/10 text-primary flex size-12 shrink-0 items-center justify-center rounded-xl">
+                  <i class="{{ .Params.icon | default "fa-solid fa-cube" }} text-xl" aria-hidden="true"></i>
+                </span>
+                <span class="min-w-0">
+                  <span class="group-hover:text-primary block text-base font-semibold text-gray-900 transition-colors">{{ .Title }}</span>
+                  <span class="mt-1 block truncate text-sm text-[#8A919E]">{{ .Params.subtitle }}</span>
+                </span>
+              </a>
+            {{ end }}
+          </div>
+        </section>
+      {{ end }}
+
+      {{- /* ── 咨询 CTA ──────────────────────────────────────────── */ -}}
+      <section
+        class="rounded-3xl bg-gradient-to-br from-[#0152D9] to-[#013A94] px-8 py-14 text-center shadow-xl shadow-primary/20"
+      >
+        <h2 class="text-2xl font-bold text-white xl:text-3xl">需要为您的企业提供{{ .Title }}服务？</h2>
+        <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-blue-100">
+          我们提供从需求调研、方案设计到交付实施与持续运维的全流程服务，支持私有化部署与个性化定制。
+        </p>
+        <a
+          class="mt-9 inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 font-medium text-[#0152D9] transition-colors duration-500 hover:bg-blue-50"
+          href="/about/#contact"
+        >
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          联系我们
+        </a>
+      </section>
+    </div>
+  </section>
+{{ end }}

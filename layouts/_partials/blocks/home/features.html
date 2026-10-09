@@ -1,0 +1,117 @@
+{{- /* 发展历程：竖向蜿蜒路径时间线（数据：data/home/features.yaml）
+     说明：路径由 JS 读取每个节点的实际位置绘制（S 形贝塞尔 + 短横连杆 + 圆点），
+     卡片奇偶左右交错、贴着路径排布，窄屏自动退化为左侧直轴单列。 */ -}}
+<section id="features" class="features relative overflow-hidden pt-8 pb-2 xl:pt-24 xl:pb-4">
+  <div class="container mx-auto px-4">
+    <h2 class="text-center text-3xl font-semibold text-[#252525] xl:text-4xl">{{ .title }}</h2>
+    <p class="mx-auto mt-4 max-w-xl text-center text-[#868686]">{{ .text }}</p>
+  </div>
+
+  <div class="container mx-auto mt-10 px-4 xl:mt-14">
+    <div class="mx-auto max-w-5xl">
+      <div data-milestone class="relative">
+        {{- /* 路径层：JS 绘制，置于卡片下方（DOM 顺序在前，且不拦截鼠标） */ -}}
+        <svg data-ms-svg class="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true" fill="none"></svg>
+
+        {{ range $i, $e := .items }}
+          {{- $even := eq (mod $i 2) 0 -}}
+          {{- $main := cond $even "#0152D9" "#08D3BB" -}}
+          {{- $tint := cond $even "#EEF3FE" "#E8FBF9" -}}
+          <div data-ms-item class="relative flex py-2 md:py-4 {{ if $even }}md:justify-end{{ else }}md:justify-start{{ end }}">
+            <div class="ml-12 w-full rounded-2xl px-4 py-3 md:ml-0 md:w-[19rem] md:px-5 md:py-3.5 xl:w-[21rem]" style="background: {{ $tint }};">
+              <div class="text-sm font-bold" style="color: {{ $main }};">{{ .date }}</div>
+              <div class="mt-1 text-[13px] leading-relaxed text-[#3B4453] md:text-sm">{{ .text }}</div>
+            </div>
+          </div>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* 竖向蜿蜒路径：读取节点实际位置 → 绘制 S 形路径 / 连杆 / 圆点（窄屏为左侧直轴） */
+  (function () {
+    var root = document.querySelector('[data-milestone]');
+    if (!root) return;
+    var svg = root.querySelector('[data-ms-svg]');
+    var items = [].slice.call(root.querySelectorAll('[data-ms-item]'));
+    if (!svg || !items.length) return;
+
+    var NS = 'http://www.w3.org/2000/svg';
+    var SPINE = '#C7D4E9';
+
+    function el(name, attrs) {
+      var n = document.createElementNS(NS, name);
+      for (var k in attrs) n.setAttribute(k, attrs[k]);
+      return n;
+    }
+
+    function draw() {
+      var box = root.getBoundingClientRect();
+      var W = box.width, H = box.height;
+      if (!W || !H) return;
+
+      var narrow = W < 768;
+      var GUTTER = 40; /* 节点与卡片最近边缘的水平间距 */
+      var pts = items.map(function (item, i) {
+        var b = item.getBoundingClientRect();
+        var card = item.firstElementChild.getBoundingClientRect();
+        var even = i % 2 === 0;
+        var cl = card.left - box.left, cr = card.right - box.left;
+        var x = narrow ? 18 : (even ? cl - GUTTER : cr + GUTTER);
+        return {
+          x: x,
+          y: b.top - box.top + b.height / 2,
+          color: even ? '#0152D9' : '#08D3BB',
+          card: { left: cl, right: cr }
+        };
+      });
+
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+      svg.setAttribute('width', W);
+      svg.setAttribute('height', H);
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+      /* 主路径：相邻节点之间用竖直切线的三次贝塞尔，形成平滑 S 形 */
+      var d = 'M ' + pts[0].x.toFixed(1) + ' ' + pts[0].y.toFixed(1);
+      for (var i = 0; i < pts.length - 1; i++) {
+        var a = pts[i], b2 = pts[i + 1];
+        var k = (b2.y - a.y) * 0.5;
+        d += ' C ' + a.x.toFixed(1) + ' ' + (a.y + k).toFixed(1) +
+             ' ' + b2.x.toFixed(1) + ' ' + (b2.y - k).toFixed(1) +
+             ' ' + b2.x.toFixed(1) + ' ' + b2.y.toFixed(1);
+      }
+      svg.appendChild(el('path', {
+        d: d, stroke: SPINE, 'stroke-width': 2, 'stroke-linecap': 'round'
+      }));
+
+      /* 连杆 + 圆点 */
+      pts.forEach(function (p) {
+        var from = p.x, to = p.card.left;
+        if (p.card.left < p.x) { from = p.card.right; to = p.x; }
+        if (Math.abs(to - from) > 1) {
+          svg.appendChild(el('line', {
+            x1: from, y1: p.y, x2: to, y2: p.y,
+            stroke: p.color, 'stroke-width': 1.5, opacity: 0.45, 'stroke-linecap': 'round'
+          }));
+        }
+        svg.appendChild(el('circle', { cx: p.x, cy: p.y, r: 8.5, fill: '#ffffff' }));
+        svg.appendChild(el('circle', { cx: p.x, cy: p.y, r: 5, fill: p.color }));
+      });
+    }
+
+    var pending = false;
+    function schedule() {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(function () { pending = false; draw(); });
+    }
+
+    draw();
+    window.addEventListener('load', draw);
+    window.addEventListener('resize', schedule);
+    if (window.ResizeObserver) new ResizeObserver(schedule).observe(root);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+  })();
+</script>
