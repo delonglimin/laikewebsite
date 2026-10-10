@@ -25,10 +25,19 @@
   <section class="py-16 xl:py-24">
     <div class="container mx-auto px-4">
       <!-- 页头：仅标题 + 分隔线（description 只用于 SEO，不在页面显示） -->
+      <!-- 标题旁的补充说明由 _index.md 的 titleNote 驱动（产品/服务栏目使用），窄屏自动折行居中 -->
       <header class="mx-auto mb-10 max-w-3xl text-center">
-        <h1 class="markdown-title text-4xl font-bold xl:text-5xl">
-          {{- if $isTerm }}标签：{{ .Data.Term }}{{ else }}{{ .Title }}{{ end -}}
-        </h1>
+        <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+          <h1 class="markdown-title text-4xl font-bold xl:text-5xl">
+            {{- if $isTerm }}标签：{{ .Data.Term }}{{ else }}{{ .Title }}{{ end -}}
+          </h1>
+          {{ with .Params.titleNote }}
+            <p class="flex items-center gap-2 text-base text-[#5A6270] xl:text-lg">
+              <span class="bg-primary h-1.5 w-1.5 shrink-0 rounded-full" aria-hidden="true"></span>
+              <span>{{ . }}</span>
+            </p>
+          {{ end }}
+        </div>
         <div class="bg-primary mx-auto mt-8 h-1 w-16 rounded-full"></div>
       </header>
 
