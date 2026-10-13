@@ -111,6 +111,19 @@
       {{ end }}
       <script src="{{ $main.RelPermalink }}" defer></script>
     {{ end }}
+
+    <!-- 百度统计（仅生产构建注入，避免本地预览污染统计数据） -->
+    {{- if hugo.IsProduction }}
+      <script>
+        var _hmt = _hmt || [];
+        (function () {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?43f11b0703a782eefc5a6c9b285c7eac";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      </script>
+    {{- end }}
   </head>
   <body class="">
     <div class="flex min-h-screen flex-col">
